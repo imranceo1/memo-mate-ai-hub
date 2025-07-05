@@ -92,7 +92,7 @@ const Chat: React.FC = () => {
       
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-8 animate-fade-in">
-          <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
+          <h1 className="text-3xl font-bold mb-2 flex items-center gap-2 text-foreground">
             <Sparkles className="w-8 h-8 text-primary" />
             AI Assistant
           </h1>
@@ -102,9 +102,9 @@ const Chat: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Chat Area */}
           <div className="lg:col-span-3">
-            <Card className="h-[600px] flex flex-col animate-slide-in">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+            <Card className="h-[600px] flex flex-col animate-slide-in border-border bg-card">
+              <CardHeader className="border-b border-border">
+                <CardTitle className="flex items-center gap-2 text-card-foreground">
                   <MessageCircle className="w-5 h-5" />
                   Chat with MemoMate AI
                 </CardTitle>
@@ -122,11 +122,11 @@ const Chat: React.FC = () => {
                           max-w-[80%] p-3 rounded-lg
                           ${message.isUser
                             ? 'bg-primary text-primary-foreground'
-                            : 'bg-muted text-muted-foreground'
+                            : 'bg-muted text-foreground border border-border'
                           }
                         `}
                       >
-                        <p className="whitespace-pre-line">{message.content}</p>
+                        <p className="whitespace-pre-line text-sm leading-relaxed">{message.content}</p>
                         <p className="text-xs opacity-70 mt-2">
                           {message.timestamp.toLocaleTimeString()}
                         </p>
@@ -136,11 +136,11 @@ const Chat: React.FC = () => {
                   
                   {isTyping && (
                     <div className="flex justify-start">
-                      <div className="bg-muted text-muted-foreground p-3 rounded-lg">
+                      <div className="bg-muted text-foreground p-3 rounded-lg border border-border">
                         <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                         </div>
                       </div>
                     </div>
@@ -153,7 +153,7 @@ const Chat: React.FC = () => {
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
                     placeholder="Ask me anything about your tasks or MemoMate..."
-                    className="flex-1"
+                    className="flex-1 bg-background text-foreground border-border"
                   />
                   <Button type="submit" disabled={!inputMessage.trim() || isTyping}>
                     <Send className="w-4 h-4" />
@@ -165,44 +165,44 @@ const Chat: React.FC = () => {
 
           {/* Quick Questions */}
           <div className="animate-slide-in" style={{ animationDelay: '0.2s' }}>
-            <Card>
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-lg">Quick Questions</CardTitle>
+                <CardTitle className="text-lg text-card-foreground">Quick Questions</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
+              <CardContent className="space-y-3">
                 {quickQuestions.map((question, index) => (
                   <Button
                     key={index}
                     variant="outline"
-                    className="w-full text-left justify-start h-auto p-3 text-sm"
+                    className="w-full text-left justify-start h-auto p-4 text-sm bg-background hover:bg-muted text-foreground border-border hover:border-primary/50 transition-all duration-200"
                     onClick={() => handleSendMessage(question)}
                   >
-                    {question}
+                    <span className="leading-relaxed">{question}</span>
                   </Button>
                 ))}
               </CardContent>
             </Card>
 
-            <Card className="mt-6">
+            <Card className="mt-6 bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-lg">AI Features</CardTitle>
+                <CardTitle className="text-lg text-card-foreground">AI Features</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                <div className="flex items-start gap-2">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
-                  <p>Local AI processing for privacy</p>
+              <CardContent className="space-y-4 text-sm">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-foreground leading-relaxed">Local AI processing for privacy</p>
                 </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
-                  <p>Understands your tasks and schedule</p>
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-foreground leading-relaxed">Understands your tasks and schedule</p>
                 </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
-                  <p>Multilingual support</p>
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-foreground leading-relaxed">Multilingual support</p>
                 </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
-                  <p>Productivity insights and tips</p>
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-foreground leading-relaxed">Productivity insights and tips</p>
                 </div>
               </CardContent>
             </Card>

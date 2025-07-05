@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import Navbar from '@/components/Navbar';
 
 interface Task {
@@ -64,16 +65,19 @@ const Timeline: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleAddTask = () => {
-    if (!newTask.title || !newTask.dueDate || !newTask.dueTime) return;
+    if (!newTask.title.trim() || !newTask.dueDate || !newTask.dueTime) {
+      alert('Please fill in all required fields (Title, Due Date, and Due Time)');
+      return;
+    }
 
     const task: Task = {
-      id: tasks.length + 1,
+      id: Date.now(), // Use timestamp for unique ID
       ...newTask,
       completed: false,
       source: 'manual'
     };
 
-    setTasks([...tasks, task]);
+    setTasks(prevTasks => [...prevTasks, task]);
     setNewTask({
       title: '',
       description: '',
@@ -92,10 +96,10 @@ const Timeline: React.FC = () => {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'border-red-500 bg-red-50';
-      case 'medium': return 'border-yellow-500 bg-yellow-50';
-      case 'low': return 'border-green-500 bg-green-50';
-      default: return 'border-gray-500 bg-gray-50';
+      case 'high': return 'border-red-500 bg-red-50 dark:bg-red-950/20';
+      case 'medium': return 'border-yellow-500 bg-yellow-50 dark:bg-yellow-950/20';
+      case 'low': return 'border-green-500 bg-green-50 dark:bg-green-950/20';
+      default: return 'border-gray-500 bg-gray-50 dark:bg-gray-950/20';
     }
   };
 
@@ -120,7 +124,7 @@ const Timeline: React.FC = () => {
       
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8 animate-fade-in">
-          <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
+          <h1 className="text-3xl font-bold mb-2 flex items-center gap-2 text-foreground">
             <Calendar className="w-8 h-8 text-primary" />
             Timeline
           </h1>
@@ -134,7 +138,7 @@ const Timeline: React.FC = () => {
               <Card 
                 key={task.id} 
                 className={`
-                  animate-slide-in border-l-4 transition-all duration-200 hover:shadow-md
+                  animate-slide-in border-l-4 transition-all duration-200 hover:shadow-md bg-card border-border
                   ${getPriorityColor(task.priority)}
                   ${task.completed ? 'opacity-60' : ''}
                 `}
@@ -145,19 +149,19 @@ const Timeline: React.FC = () => {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-lg">{getSourceIcon(task.source)}</span>
-                        <h3 className={`text-lg font-semibold ${task.completed ? 'line-through' : ''}`}>
+                        <h3 className={`text-lg font-semibold text-foreground ${task.completed ? 'line-through' : ''}`}>
                           {task.title}
                         </h3>
-                        <span className={`px-2 py-1 text-xs rounded-full capitalize ${
-                          task.priority === 'high' ? 'bg-red-100 text-red-800' :
-                          task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-green-100 text-green-800'
+                        <span className={`px-2 py-1 text-xs rounded-full capitalize font-medium ${
+                          task.priority === 'high' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' :
+                          task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' :
+                          'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                         }`}>
                           {task.priority}
                         </span>
                       </div>
                       
-                      <p className="text-muted-foreground mb-3">{task.description}</p>
+                      <p className="text-muted-foreground mb-3 leading-relaxed">{task.description}</p>
                       
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
@@ -179,7 +183,7 @@ const Timeline: React.FC = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => toggleTaskComplete(task.id)}
-                      className={task.completed ? 'text-green-600' : 'text-muted-foreground'}
+                      className={task.completed ? 'text-green-600' : 'text-muted-foreground hover:text-foreground'}
                     >
                       <CheckCircle className="w-5 h-5" />
                     </Button>
@@ -199,54 +203,63 @@ const Timeline: React.FC = () => {
                   Add Task
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="bg-background border-border">
                 <DialogHeader>
-                  <DialogTitle>Add New Task</DialogTitle>
+                  <DialogTitle className="text-foreground">Add New Task</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium">Task Title</label>
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="title" className="text-sm font-medium text-foreground">Task Title *</Label>
                     <Input
+                      id="title"
                       value={newTask.title}
                       onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
                       placeholder="Enter task title"
+                      className="bg-background text-foreground border-border"
                     />
                   </div>
                   
-                  <div>
-                    <label className="text-sm font-medium">Description</label>
+                  <div className="space-y-2">
+                    <Label htmlFor="description" className="text-sm font-medium text-foreground">Description</Label>
                     <Textarea
+                      id="description"
                       value={newTask.description}
                       onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
                       placeholder="Enter task description"
+                      className="bg-background text-foreground border-border"
                     />
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium">Due Date</label>
+                    <div className="space-y-2">
+                      <Label htmlFor="dueDate" className="text-sm font-medium text-foreground">Due Date *</Label>
                       <Input
+                        id="dueDate"
                         type="date"
                         value={newTask.dueDate}
                         onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                        className="bg-background text-foreground border-border"
                       />
                     </div>
-                    <div>
-                      <label className="text-sm font-medium">Due Time</label>
+                    <div className="space-y-2">
+                      <Label htmlFor="dueTime" className="text-sm font-medium text-foreground">Due Time *</Label>
                       <Input
+                        id="dueTime"
                         type="time"
                         value={newTask.dueTime}
                         onChange={(e) => setNewTask({ ...newTask, dueTime: e.target.value })}
+                        className="bg-background text-foreground border-border"
                       />
                     </div>
                   </div>
                   
-                  <div>
-                    <label className="text-sm font-medium">Priority</label>
+                  <div className="space-y-2">
+                    <Label htmlFor="priority" className="text-sm font-medium text-foreground">Priority</Label>
                     <select
+                      id="priority"
                       value={newTask.priority}
                       onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as Task['priority'] })}
-                      className="w-full p-2 border rounded-md"
+                      className="w-full p-2 border rounded-md bg-background text-foreground border-border"
                     >
                       <option value="low">Low</option>
                       <option value="medium">Medium</option>
@@ -262,29 +275,29 @@ const Timeline: React.FC = () => {
             </Dialog>
 
             {/* Task Stats */}
-            <Card className="animate-bounce-in">
+            <Card className="animate-bounce-in bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-lg">Task Overview</CardTitle>
+                <CardTitle className="text-lg text-card-foreground">Task Overview</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-sm">Total Tasks</span>
-                  <span className="font-semibold">{tasks.length}</span>
+                  <span className="text-sm text-muted-foreground">Total Tasks</span>
+                  <span className="font-semibold text-foreground">{tasks.length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm">Completed</span>
+                  <span className="text-sm text-muted-foreground">Completed</span>
                   <span className="font-semibold text-green-600">
                     {tasks.filter(t => t.completed).length}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm">Pending</span>
+                  <span className="text-sm text-muted-foreground">Pending</span>
                   <span className="font-semibold text-orange-600">
                     {tasks.filter(t => !t.completed).length}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm">High Priority</span>
+                  <span className="text-sm text-muted-foreground">High Priority</span>
                   <span className="font-semibold text-red-600">
                     {tasks.filter(t => t.priority === 'high' && !t.completed).length}
                   </span>
@@ -293,28 +306,28 @@ const Timeline: React.FC = () => {
             </Card>
 
             {/* AI Extraction Status */}
-            <Card className="animate-bounce-in" style={{ animationDelay: '0.1s' }}>
+            <Card className="animate-bounce-in bg-card border-border" style={{ animationDelay: '0.1s' }}>
               <CardHeader>
-                <CardTitle className="text-lg">AI Extraction</CardTitle>
+                <CardTitle className="text-lg text-card-foreground">AI Extraction</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div className="flex items-center justify-between">
-                  <span>📧 Gmail</span>
-                  <span className="text-green-600">Active</span>
+                  <span className="text-foreground">📧 Gmail</span>
+                  <span className="text-green-600 font-medium">Active</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>💬 WhatsApp</span>
-                  <span className="text-yellow-600">Setup</span>
+                  <span className="text-foreground">💬 WhatsApp</span>
+                  <span className="text-yellow-600 font-medium">Setup</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>📅 Calendar</span>
-                  <span className="text-green-600">Active</span>
+                  <span className="text-foreground">📅 Calendar</span>
+                  <span className="text-green-600 font-medium">Active</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>📱 SMS</span>
-                  <span className="text-gray-600">Disabled</span>
+                  <span className="text-foreground">📱 SMS</span>
+                  <span className="text-gray-600 font-medium">Disabled</span>
                 </div>
-                <Button variant="outline" size="sm" className="w-full mt-3">
+                <Button variant="outline" size="sm" className="w-full mt-3 bg-background text-foreground border-border hover:bg-muted">
                   Configure Sources
                 </Button>
               </CardContent>
