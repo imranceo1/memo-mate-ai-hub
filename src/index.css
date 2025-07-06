@@ -181,6 +181,11 @@
     animation: bounceIn 0.8s ease-out;
   }
 
+  /* Enhanced button click animation */
+  .animate-click {
+    animation: clickEffect 0.2s ease-out;
+  }
+
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -196,5 +201,67 @@
     50% { opacity: 1; transform: scale(1.05); }
     70% { transform: scale(0.9); }
     100% { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes clickEffect {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+
+  /* Enhanced ripple effect for buttons */
+  .button-ripple {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .button-ripple::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .button-ripple:active::after {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+/* Enhanced button hover and click states */
+@layer components {
+  .btn-enhanced {
+    @apply transform transition-all duration-150 ease-out;
+    @apply hover:scale-105 hover:shadow-lg;
+    @apply active:scale-95 active:shadow-sm;
+    @apply focus:ring-2 focus:ring-primary/50 focus:outline-none;
+  }
+
+  .card-enhanced {
+    @apply transform transition-all duration-200 ease-out;
+    @apply hover:shadow-lg hover:-translate-y-1;
+    @apply backdrop-blur-sm bg-opacity-90;
+  }
+
+  /* Quick question button improvements */
+  .quick-question-btn {
+    @apply w-full text-left justify-start h-auto p-4 text-sm;
+    @apply bg-background hover:bg-muted text-foreground;
+    @apply border-border hover:border-primary/50;
+    @apply transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98];
+    @apply leading-relaxed break-words whitespace-normal;
+    @apply shadow-sm hover:shadow-md;
+  }
+
+  .quick-question-btn span {
+    @apply text-left block w-full;
+    word-wrap: break-word;
+    hyphens: auto;
   }
 }

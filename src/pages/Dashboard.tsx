@@ -1,38 +1,16 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, CheckCircle, Clock, TrendingUp, Star, Bell } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Plus, Bell, BarChart3, Calendar, Sparkles, TrendingUp, Target, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Navbar from '@/components/Navbar';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Dashboard: React.FC = () => {
-  const { t } = useLanguage();
   const navigate = useNavigate();
-
-  const stats = [
-    { icon: CheckCircle, label: t('tasksCompleted'), value: '24', change: '+12%', color: 'text-green-600' },
-    { icon: Clock, label: t('pendingTasks'), value: '8', change: '-5%', color: 'text-orange-600' },
-    { icon: TrendingUp, label: t('productivityScore'), value: '87%', change: '+3%', color: 'text-blue-600' },
-    { icon: Star, label: t('streakDays'), value: '15', change: '+1', color: 'text-purple-600' },
-  ];
-
-  const recentTasks = [
-    { title: 'Review quarterly reports', due: '2 hours', priority: 'high' },
-    { title: 'Team standup meeting', due: '4 hours', priority: 'medium' },
-    { title: 'Update project documentation', due: '1 day', priority: 'low' },
-    { title: 'Client presentation prep', due: '2 days', priority: 'high' },
-  ];
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/30 dark:text-gray-300 dark:border-gray-800';
-    }
-  };
+  const { t } = useLanguage();
+  const [showAddTaskDialog, setShowAddTaskDialog] = useState(false);
 
   const handleQuickAction = (action: string) => {
     switch (action) {
@@ -43,7 +21,8 @@ const Dashboard: React.FC = () => {
         navigate('/reminders');
         break;
       case 'viewAnalytics':
-        // For now, stay on dashboard (could create analytics page later)
+        // For now, scroll to analytics section on dashboard
+        document.getElementById('analytics-section')?.scrollIntoView({ behavior: 'smooth' });
         break;
       case 'viewAllTasks':
         navigate('/timeline');
@@ -51,11 +30,67 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const stats = [
+    { icon: Target, label: t('tasksCompleted'), value: '24', color: 'text-green-600', bgColor: 'bg-green-100' },
+    { icon: Clock, label: t('pendingTasks'), value: '8', color: 'text-orange-600', bgColor: 'bg-orange-100' },
+    { icon: TrendingUp, label: t('productivityScore'), value: '87%', color: 'text-blue-600', bgColor: 'bg-blue-100' },
+    { icon: Calendar, label: t('streakDays'), value: '15', color: 'text-purple-600', bgColor: 'bg-purple-100' },
+  ];
+
+  const upcomingTasks = [
+    { title: "Review quarterly reports", time: "2:00 PM", priority: "high" },
+    { title: "Team standup meeting", time: "3:30 PM", priority: "medium" },
+    { title: "Update project documentation", time: "5:00 PM", priority: "low" },
+    { title: "Client feedback review", time: "Tomorrow 9:00 AM", priority: "high" },
+  ];
+
+  const quickActions = [
+    { 
+      action: 'addTask', 
+      icon: Plus, 
+      label: t('addNewTask'), 
+      color: 'bg-primary hover:bg-primary/90',
+      textColor: 'text-primary-foreground'
+    },
+    { 
+      action: 'setReminder', 
+      icon: Bell, 
+      label: t('setReminder'), 
+      color: 'bg-orange-500 hover:bg-orange-600',
+      textColor: 'text-white'
+    },
+    { 
+      action: 'viewAnalytics', 
+      icon: BarChart3, 
+      label: t('viewAnalytics'), 
+      color: 'bg-green-500 hover:bg-green-600',
+      textColor: 'text-white'
+    },
+    { 
+      action: 'viewAllTasks', 
+      icon: Calendar, 
+      label: t('viewAllTasks'), 
+      color: 'bg-purple-500 hover:bg-purple-600',
+      textColor: 'text-white'
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-muted/20 animate-gradient" />
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-20 left-20 w-40 h-40 bg-primary/20 rounded-full animate-pulse" />
+        <div className="absolute top-40 right-32 w-32 h-32 bg-accent/20 rounded-full animate-bounce" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-32 left-1/3 w-48 h-48 bg-primary/10 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-40 right-1/4 w-36 h-36 bg-accent/15 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }} />
+        <div className="absolute top-1/2 left-10 w-24 h-24 bg-primary/15 rounded-full animate-pulse" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute top-1/3 right-10 w-28 h-28 bg-accent/25 rounded-full animate-bounce" style={{ animationDelay: '2.5s' }} />
+      </div>
+
       <Navbar />
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Welcome Section */}
         <div className="mb-8 animate-fade-in">
           <h1 className="text-3xl font-bold mb-2 text-foreground">{t('goodMorning')}</h1>
@@ -63,20 +98,23 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <Card key={index} className="animate-bounce-in bg-card text-card-foreground" style={{ animationDelay: `${index * 0.1}s` }}>
-                <CardContent className="p-6">
+              <Card 
+                key={index} 
+                className="animate-slide-in bg-card/95 backdrop-blur border-border transform hover:scale-105 transition-all duration-200" 
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
+                      <p className="text-sm text-muted-foreground">{stat.label}</p>
                       <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                      <p className={`text-xs ${stat.color}`}>{stat.change} from last week</p>
                     </div>
-                    <div className={`p-3 rounded-full bg-primary/10`}>
-                      <Icon className={`w-6 h-6 ${stat.color}`} />
+                    <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                      <Icon className={`w-5 h-5 ${stat.color}`} />
                     </div>
                   </div>
                 </CardContent>
@@ -85,102 +123,84 @@ const Dashboard: React.FC = () => {
           })}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Recent Tasks */}
-          <div className="lg:col-span-2">
-            <Card className="animate-slide-in bg-card text-card-foreground">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-card-foreground">
-                  <Calendar className="w-5 h-5" />
-                  {t('upcomingTasks')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {recentTasks.map((task, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors">
-                      <div className="flex-1">
-                        <p className="font-medium text-foreground">{task.title}</p>
-                        <p className="text-sm text-muted-foreground">Due in {task.due}</p>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className={`px-2 py-1 text-xs rounded-full border ${getPriorityColor(task.priority)}`}>
-                          {task.priority}
-                        </span>
-                        <Button variant="ghost" size="sm">
-                          <CheckCircle className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <Button 
-                  className="w-full mt-4" 
-                  variant="outline"
-                  onClick={() => handleQuickAction('viewAllTasks')}
-                >
-                  {t('viewAllTasks')}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Quick Actions */}
-          <div className="space-y-6">
-            <Card className="animate-slide-in bg-card text-card-foreground" style={{ animationDelay: '0.2s' }}>
-              <CardHeader>
-                <CardTitle className="text-card-foreground">{t('quickActions')}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button 
-                  className="w-full justify-start" 
-                  variant="outline"
-                  onClick={() => handleQuickAction('addTask')}
-                >
-                  <Calendar className="w-4 h-4 mr-2" />
-                  {t('addNewTask')}
-                </Button>
-                <Button 
-                  className="w-full justify-start" 
-                  variant="outline"
-                  onClick={() => handleQuickAction('setReminder')}
-                >
-                  <Bell className="w-4 h-4 mr-2" />
-                  {t('setReminder')}
-                </Button>
-                <Button 
-                  className="w-full justify-start" 
-                  variant="outline"
-                  onClick={() => handleQuickAction('viewAnalytics')}
-                >
-                  <Star className="w-4 h-4 mr-2" />
-                  {t('viewAnalytics')}
-                </Button>
-              </CardContent>
-            </Card>
+          <Card className="animate-bounce-in bg-card/95 backdrop-blur border-border">
+            <CardHeader>
+              <CardTitle className="text-card-foreground">{t('quickActions')}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {quickActions.map((action, index) => {
+                const Icon = action.icon;
+                return (
+                  <Button
+                    key={index}
+                    onClick={() => handleQuickAction(action.action)}
+                    className={`w-full justify-start gap-3 h-12 ${action.color} ${action.textColor} transform transition-all duration-150 hover:scale-105 active:scale-95`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span>{action.label}</span>
+                  </Button>
+                );
+              })}
+            </CardContent>
+          </Card>
 
-            <Card className="animate-slide-in bg-card text-card-foreground" style={{ animationDelay: '0.3s' }}>
-              <CardHeader>
-                <CardTitle className="text-card-foreground">{t('aiInsights')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="p-3 bg-primary/5 rounded-lg border-l-4 border-primary">
-                    <p className="text-sm font-medium text-foreground">{t('productivityTip')}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {t('productivityTipText')}
-                    </p>
+          {/* Upcoming Tasks */}
+          <Card className="animate-bounce-in bg-card/95 backdrop-blur border-border" style={{ animationDelay: '0.2s' }}>
+            <CardHeader>
+              <CardTitle className="text-card-foreground">{t('upcomingTasks')}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {upcomingTasks.map((task, index) => (
+                <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                  <div className="flex-1">
+                    <p className="font-medium text-foreground text-sm leading-relaxed">{task.title}</p>
+                    <p className="text-xs text-muted-foreground">{task.time}</p>
                   </div>
-                  <div className="p-3 bg-accent/5 rounded-lg border-l-4 border-accent">
-                    <p className="text-sm font-medium text-foreground">{t('weeklySummary')}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {t('weeklySummaryText')}
-                    </p>
-                  </div>
+                  <div className={`w-2 h-2 rounded-full ${
+                    task.priority === 'high' ? 'bg-red-500' : 
+                    task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+                  }`} />
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              ))}
+              <Button 
+                variant="outline" 
+                className="w-full mt-3 transform transition-all duration-150 hover:scale-105 active:scale-95" 
+                onClick={() => navigate('/timeline')}
+              >
+                {t('viewAllTasks')}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* AI Insights */}
+          <Card className="animate-bounce-in bg-card/95 backdrop-blur border-border" style={{ animationDelay: '0.4s' }} id="analytics-section">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-card-foreground">
+                <Sparkles className="w-5 h-5 text-primary" />
+                {t('aiInsights')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
+                  {t('productivityTip')}
+                </p>
+                <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                  {t('productivityTipText')}
+                </p>
+              </div>
+              <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                <p className="text-sm font-medium text-green-900 dark:text-green-100 mb-1">
+                  {t('weeklySummary')}
+                </p>
+                <p className="text-xs text-green-700 dark:text-green-300 leading-relaxed">
+                  {t('weeklySummaryText')}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

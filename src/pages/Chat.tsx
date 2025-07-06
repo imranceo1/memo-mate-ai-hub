@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Send, MessageCircle, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,7 +19,7 @@ const Chat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      content: "Hello! I'm your MemoMate AI assistant. I can help you manage tasks, set reminders, and answer questions about your productivity. How can I assist you today?",
+      content: t('aiWelcomeMessage'),
       isUser: false,
       timestamp: new Date(),
     },
@@ -27,10 +28,10 @@ const Chat: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
 
   const quickQuestions = [
-    "What tasks are due today?",
-    "How do I set a reminder?",
-    "Show my productivity stats",
-    "How does MemoMate protect my data?",
+    t('whatTasksDueToday'),
+    t('howToSetReminder'),
+    t('showProductivityStats'),
+    t('howDataProtection'),
   ];
 
   const handleSendMessage = async (message: string) => {
@@ -64,22 +65,22 @@ const Chat: React.FC = () => {
     const lowerMessage = userMessage.toLowerCase();
     
     if (lowerMessage.includes('due today')) {
-      return "You have 3 tasks due today:\n\n1. Review quarterly reports (High priority) - Due in 2 hours\n2. Team standup meeting (Medium priority) - Due in 4 hours\n3. Update project documentation (Low priority) - Due by end of day\n\nWould you like me to set reminders for any of these?";
+      return t('aiResponseTasksDue');
     }
     
     if (lowerMessage.includes('reminder')) {
-      return "To set a reminder in MemoMate:\n\n1. Go to the Timeline page\n2. Click the '+ Add Task' button\n3. Fill in the task details and due time\n4. MemoMate will automatically remind you 1 hour before\n\nYou can also ask me to set reminders directly. Just say 'Remind me to [task] at [time]'";
+      return t('aiResponseReminder');
     }
     
     if (lowerMessage.includes('productivity') || lowerMessage.includes('stats')) {
-      return "Here are your productivity insights:\n\n📊 This week: 87% completion rate\n⚡ Best time: 9-11 AM (highest focus)\n🔥 Current streak: 15 days\n📈 Improvement: +12% from last week\n\nYou're doing great! Keep up the momentum! 🎯";
+      return t('aiResponseProductivity');
     }
     
     if (lowerMessage.includes('data') || lowerMessage.includes('privacy')) {
-      return "MemoMate takes your privacy seriously:\n\n🔒 AES-256 encryption for all data\n💾 Local storage option available\n🤖 AI processing happens locally\n🔄 You control cloud sync settings\n🗑️ Easy data deletion from Settings\n\nYour personal information never leaves your device unless you explicitly choose cloud storage.";
+      return t('aiResponseDataProtection');
     }
     
-    return "I understand you're asking about: '" + userMessage + "'\n\nI can help you with:\n• Task management and reminders\n• Productivity insights and tips\n• MemoMate features and settings\n• Data privacy and security\n\nTry asking me something more specific, or use one of the quick questions below!";
+    return t('aiResponseDefault') + userMessage + t('aiResponseDefaultEnd');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -88,10 +89,19 @@ const Chat: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-muted/20 animate-gradient" />
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-10 left-10 w-32 h-32 bg-primary/20 rounded-full animate-pulse" />
+        <div className="absolute top-32 right-20 w-24 h-24 bg-accent/20 rounded-full animate-bounce" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-primary/10 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-32 right-1/3 w-28 h-28 bg-accent/15 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }} />
+      </div>
+      
       <Navbar />
       
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 py-8 max-w-4xl relative z-10">
         <div className="mb-8 animate-fade-in">
           <h1 className="text-3xl font-bold mb-2 flex items-center gap-2 text-foreground">
             <Sparkles className="w-8 h-8 text-primary" />
@@ -103,7 +113,7 @@ const Chat: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Chat Area */}
           <div className="lg:col-span-3">
-            <Card className="h-[600px] flex flex-col animate-slide-in border-border bg-card">
+            <Card className="h-[600px] flex flex-col animate-slide-in border-border bg-card/95 backdrop-blur">
               <CardHeader className="border-b border-border">
                 <CardTitle className="flex items-center gap-2 text-card-foreground">
                   <MessageCircle className="w-5 h-5" />
@@ -157,7 +167,11 @@ const Chat: React.FC = () => {
                       placeholder={t('askAnything')}
                       className="flex-1 bg-background text-foreground border-border"
                     />
-                    <Button type="submit" disabled={!inputMessage.trim() || isTyping}>
+                    <Button 
+                      type="submit" 
+                      disabled={!inputMessage.trim() || isTyping}
+                      className="transform transition-all duration-150 hover:scale-105 active:scale-95"
+                    >
                       <Send className="w-4 h-4" />
                     </Button>
                   </form>
@@ -168,44 +182,44 @@ const Chat: React.FC = () => {
 
           {/* Quick Questions Sidebar */}
           <div className="animate-slide-in" style={{ animationDelay: '0.2s' }}>
-            <Card className="bg-card border-border mb-6">
+            <Card className="bg-card/95 backdrop-blur border-border mb-6">
               <CardHeader>
                 <CardTitle className="text-lg text-card-foreground">{t('quickQuestions')}</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
+              <CardContent className="space-y-3">
                 {quickQuestions.map((question, index) => (
                   <Button
                     key={index}
                     variant="outline"
-                    className="w-full text-left justify-start h-auto p-3 text-sm bg-background hover:bg-muted text-foreground border-border hover:border-primary/50 transition-all duration-200"
+                    className="w-full text-left justify-start h-auto p-4 text-sm bg-background hover:bg-muted text-foreground border-border hover:border-primary/50 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] leading-relaxed break-words whitespace-normal"
                     onClick={() => handleSendMessage(question)}
                   >
-                    <span className="leading-relaxed text-left">{question}</span>
+                    <span className="text-left block">{question}</span>
                   </Button>
                 ))}
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-border">
+            <Card className="bg-card/95 backdrop-blur border-border">
               <CardHeader>
                 <CardTitle className="text-lg text-card-foreground">{t('aiFeatures')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 text-sm">
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-foreground leading-relaxed">Local AI processing for privacy</p>
+                  <p className="text-foreground leading-relaxed">{t('aiFeature1')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-foreground leading-relaxed">Understands your tasks and schedule</p>
+                  <p className="text-foreground leading-relaxed">{t('aiFeature2')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-foreground leading-relaxed">Multilingual support</p>
+                  <p className="text-foreground leading-relaxed">{t('aiFeature3')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-foreground leading-relaxed">Productivity insights and tips</p>
+                  <p className="text-foreground leading-relaxed">{t('aiFeature4')}</p>
                 </div>
               </CardContent>
             </Card>
