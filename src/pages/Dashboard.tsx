@@ -4,8 +4,11 @@ import { Calendar, CheckCircle, Clock, TrendingUp, Star, Bell } from 'lucide-rea
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Dashboard: React.FC = () => {
+  const { t } = useLanguage();
+
   const stats = [
     { icon: CheckCircle, label: 'Tasks Completed', value: '24', change: '+12%', color: 'text-green-600' },
     { icon: Clock, label: 'Pending Tasks', value: '8', change: '-5%', color: 'text-orange-600' },
@@ -22,10 +25,10 @@ const Dashboard: React.FC = () => {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800 border-red-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'high': return 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-800';
+      case 'low': return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/30 dark:text-gray-300 dark:border-gray-800';
     }
   };
 
@@ -36,7 +39,7 @@ const Dashboard: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8 animate-fade-in">
-          <h1 className="text-3xl font-bold mb-2">Good morning! 👋</h1>
+          <h1 className="text-3xl font-bold mb-2 text-foreground">Good morning! 👋</h1>
           <p className="text-muted-foreground">You have 8 tasks due today. Let's get productive!</p>
         </div>
 
@@ -45,12 +48,12 @@ const Dashboard: React.FC = () => {
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <Card key={index} className="animate-bounce-in" style={{ animationDelay: `${index * 0.1}s` }}>
+              <Card key={index} className="animate-bounce-in bg-card text-card-foreground" style={{ animationDelay: `${index * 0.1}s` }}>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
-                      <p className="text-2xl font-bold">{stat.value}</p>
+                      <p className="text-2xl font-bold text-foreground">{stat.value}</p>
                       <p className={`text-xs ${stat.color}`}>{stat.change} from last week</p>
                     </div>
                     <div className={`p-3 rounded-full bg-primary/10`}>
@@ -66,9 +69,9 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Recent Tasks */}
           <div className="lg:col-span-2">
-            <Card className="animate-slide-in">
+            <Card className="animate-slide-in bg-card text-card-foreground">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-card-foreground">
                   <Calendar className="w-5 h-5" />
                   Upcoming Tasks
                 </CardTitle>
@@ -76,9 +79,9 @@ const Dashboard: React.FC = () => {
               <CardContent>
                 <div className="space-y-4">
                   {recentTasks.map((task, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
+                    <div key={index} className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors">
                       <div className="flex-1">
-                        <p className="font-medium">{task.title}</p>
+                        <p className="font-medium text-foreground">{task.title}</p>
                         <p className="text-sm text-muted-foreground">Due in {task.due}</p>
                       </div>
                       <div className="flex items-center gap-3">
@@ -101,9 +104,9 @@ const Dashboard: React.FC = () => {
 
           {/* Quick Actions */}
           <div className="space-y-6">
-            <Card className="animate-slide-in" style={{ animationDelay: '0.2s' }}>
+            <Card className="animate-slide-in bg-card text-card-foreground" style={{ animationDelay: '0.2s' }}>
               <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
+                <CardTitle className="text-card-foreground">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button className="w-full justify-start" variant="outline">
@@ -121,20 +124,20 @@ const Dashboard: React.FC = () => {
               </CardContent>
             </Card>
 
-            <Card className="animate-slide-in" style={{ animationDelay: '0.3s' }}>
+            <Card className="animate-slide-in bg-card text-card-foreground" style={{ animationDelay: '0.3s' }}>
               <CardHeader>
-                <CardTitle>AI Insights</CardTitle>
+                <CardTitle className="text-card-foreground">AI Insights</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="p-3 bg-primary/5 rounded-lg border-l-4 border-primary">
-                    <p className="text-sm font-medium">💡 Productivity Tip</p>
+                    <p className="text-sm font-medium text-foreground">💡 Productivity Tip</p>
                     <p className="text-xs text-muted-foreground mt-1">
                       You're most productive between 9-11 AM. Schedule important tasks during this window.
                     </p>
                   </div>
                   <div className="p-3 bg-accent/5 rounded-lg border-l-4 border-accent">
-                    <p className="text-sm font-medium">📊 Weekly Summary</p>
+                    <p className="text-sm font-medium text-foreground">📊 Weekly Summary</p>
                     <p className="text-xs text-muted-foreground mt-1">
                       You completed 85% of tasks this week. Great job staying consistent!
                     </p>

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import Navbar from '@/components/Navbar';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Task {
   id: number;
@@ -18,9 +19,11 @@ interface Task {
   priority: 'low' | 'medium' | 'high';
   completed: boolean;
   source: 'manual' | 'gmail' | 'whatsapp' | 'calendar';
+  status: 'low' | 'medium' | 'high';
 }
 
 const Timeline: React.FC = () => {
+  const { t } = useLanguage();
   const [tasks, setTasks] = useState<Task[]>([
     {
       id: 1,
@@ -30,7 +33,8 @@ const Timeline: React.FC = () => {
       dueTime: '14:00',
       priority: 'high',
       completed: false,
-      source: 'gmail'
+      source: 'gmail',
+      status: 'high'
     },
     {
       id: 2,
@@ -40,7 +44,8 @@ const Timeline: React.FC = () => {
       dueTime: '09:30',
       priority: 'medium',
       completed: false,
-      source: 'calendar'
+      source: 'calendar',
+      status: 'medium'
     },
     {
       id: 3,
@@ -50,7 +55,8 @@ const Timeline: React.FC = () => {
       dueTime: '17:00',
       priority: 'low',
       completed: false,
-      source: 'manual'
+      source: 'manual',
+      status: 'low'
     }
   ]);
 
@@ -59,7 +65,8 @@ const Timeline: React.FC = () => {
     description: '',
     dueDate: '',
     dueTime: '',
-    priority: 'medium' as Task['priority']
+    priority: 'medium' as Task['priority'],
+    status: 'medium' as Task['status']
   });
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -71,7 +78,7 @@ const Timeline: React.FC = () => {
     }
 
     const task: Task = {
-      id: Date.now(), // Use timestamp for unique ID
+      id: Date.now(),
       ...newTask,
       completed: false,
       source: 'manual'
@@ -83,7 +90,8 @@ const Timeline: React.FC = () => {
       description: '',
       dueDate: '',
       dueTime: '',
-      priority: 'medium'
+      priority: 'medium',
+      status: 'medium'
     });
     setIsDialogOpen(false);
   };
@@ -96,10 +104,10 @@ const Timeline: React.FC = () => {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'border-red-500 bg-red-50 dark:bg-red-950/20';
-      case 'medium': return 'border-yellow-500 bg-yellow-50 dark:bg-yellow-950/20';
-      case 'low': return 'border-green-500 bg-green-50 dark:bg-green-950/20';
-      default: return 'border-gray-500 bg-gray-50 dark:bg-gray-950/20';
+      case 'high': return 'border-red-500 bg-red-50 dark:bg-red-950/20 dark:border-red-400';
+      case 'medium': return 'border-yellow-500 bg-yellow-50 dark:bg-yellow-950/20 dark:border-yellow-400';
+      case 'low': return 'border-green-500 bg-green-50 dark:bg-green-950/20 dark:border-green-400';
+      default: return 'border-gray-500 bg-gray-50 dark:bg-gray-950/20 dark:border-gray-400';
     }
   };
 
@@ -126,7 +134,7 @@ const Timeline: React.FC = () => {
         <div className="mb-8 animate-fade-in">
           <h1 className="text-3xl font-bold mb-2 flex items-center gap-2 text-foreground">
             <Calendar className="w-8 h-8 text-primary" />
-            Timeline
+            {t('timeline')}
           </h1>
           <p className="text-muted-foreground">Your tasks from all sources, organized by time</p>
         </div>
@@ -138,9 +146,10 @@ const Timeline: React.FC = () => {
               <Card 
                 key={task.id} 
                 className={`
-                  animate-slide-in border-l-4 transition-all duration-200 hover:shadow-md bg-card border-border
+                  animate-slide-in border-l-4 transition-all duration-200 hover:shadow-md
                   ${getPriorityColor(task.priority)}
                   ${task.completed ? 'opacity-60' : ''}
+                  bg-card text-card-foreground border-border
                 `}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
@@ -176,6 +185,16 @@ const Timeline: React.FC = () => {
                           <Flag className="w-4 h-4" />
                           {task.source}
                         </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs font-medium">Status:</span>
+                          <span className={`text-xs font-medium ${
+                            task.status === 'high' ? 'text-red-600 dark:text-red-400' :
+                            task.status === 'medium' ? 'text-yellow-600 dark:text-yellow-400' :
+                            'text-green-600 dark:text-green-400'
+                          }`}>
+                            {task.status}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     
@@ -200,16 +219,16 @@ const Timeline: React.FC = () => {
               <DialogTrigger asChild>
                 <Button className="w-full" size="lg">
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Task
+                  {t('addTask')}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-background border-border">
+              <DialogContent className="bg-background border-border max-w-md">
                 <DialogHeader>
-                  <DialogTitle className="text-foreground">Add New Task</DialogTitle>
+                  <DialogTitle className="text-foreground">{t('addTask')}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="title" className="text-sm font-medium text-foreground">Task Title *</Label>
+                    <Label htmlFor="title" className="text-sm font-medium text-foreground">{t('taskTitle')} *</Label>
                     <Input
                       id="title"
                       value={newTask.title}
@@ -220,7 +239,7 @@ const Timeline: React.FC = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="description" className="text-sm font-medium text-foreground">Description</Label>
+                    <Label htmlFor="description" className="text-sm font-medium text-foreground">{t('description')}</Label>
                     <Textarea
                       id="description"
                       value={newTask.description}
@@ -232,7 +251,7 @@ const Timeline: React.FC = () => {
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="dueDate" className="text-sm font-medium text-foreground">Due Date *</Label>
+                      <Label htmlFor="dueDate" className="text-sm font-medium text-foreground">{t('dueDate')} *</Label>
                       <Input
                         id="dueDate"
                         type="date"
@@ -242,7 +261,7 @@ const Timeline: React.FC = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="dueTime" className="text-sm font-medium text-foreground">Due Time *</Label>
+                      <Label htmlFor="dueTime" className="text-sm font-medium text-foreground">{t('dueTime')} *</Label>
                       <Input
                         id="dueTime"
                         type="time"
@@ -253,22 +272,37 @@ const Timeline: React.FC = () => {
                     </div>
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="priority" className="text-sm font-medium text-foreground">Priority</Label>
-                    <select
-                      id="priority"
-                      value={newTask.priority}
-                      onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as Task['priority'] })}
-                      className="w-full p-2 border rounded-md bg-background text-foreground border-border"
-                    >
-                      <option value="low">Low</option>
-                      <option value="medium">Medium</option>
-                      <option value="high">High</option>
-                    </select>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="priority" className="text-sm font-medium text-foreground">{t('priority')}</Label>
+                      <select
+                        id="priority"
+                        value={newTask.priority}
+                        onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as Task['priority'] })}
+                        className="w-full p-2 border rounded-md bg-background text-foreground border-border"
+                      >
+                        <option value="low">{t('low')}</option>
+                        <option value="medium">{t('medium')}</option>
+                        <option value="high">{t('high')}</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="status" className="text-sm font-medium text-foreground">{t('status')}</Label>
+                      <select
+                        id="status"
+                        value={newTask.status}
+                        onChange={(e) => setNewTask({ ...newTask, status: e.target.value as Task['status'] })}
+                        className="w-full p-2 border rounded-md bg-background text-foreground border-border"
+                      >
+                        <option value="low">{t('low')}</option>
+                        <option value="medium">{t('medium')}</option>
+                        <option value="high">{t('high')}</option>
+                      </select>
+                    </div>
                   </div>
                   
                   <Button onClick={handleAddTask} className="w-full">
-                    Add Task
+                    {t('addTask')}
                   </Button>
                 </div>
               </DialogContent>

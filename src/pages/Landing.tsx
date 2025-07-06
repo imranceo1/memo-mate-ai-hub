@@ -5,8 +5,12 @@ import { ArrowUp, Bell, MessageCircle, Calendar, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import ThemeSelector from '@/components/ThemeSelector';
+import LanguageSelector from '@/components/LanguageSelector';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Landing: React.FC = () => {
+  const { t } = useLanguage();
+
   const features = [
     {
       icon: MessageCircle,
@@ -43,9 +47,10 @@ const Landing: React.FC = () => {
           </div>
           
           <div className="flex items-center space-x-4">
+            <LanguageSelector />
             <ThemeSelector />
             <Link to="/login">
-              <Button variant="outline">Sign In</Button>
+              <Button variant="outline">{t('signIn')}</Button>
             </Link>
           </div>
         </div>
@@ -55,21 +60,20 @@ const Landing: React.FC = () => {
       <section className="container mx-auto px-4 py-20 text-center">
         <div className="animate-fade-in">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient">
-            Your AI-Powered Second Brain
+            {t('heroTitle')}
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            MemoMate intelligently extracts tasks from your daily communications, 
-            provides AI-powered assistance, and keeps you organized with smart reminders.
+            {t('heroSubtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/login">
               <Button size="lg" className="text-lg px-8 py-3">
-                Get Started Free
+                {t('getStarted')}
                 <ArrowUp className="ml-2 w-5 h-5" />
               </Button>
             </Link>
             <Button variant="outline" size="lg" className="text-lg px-8 py-3">
-              Watch Demo
+              {t('watchDemo')}
             </Button>
           </div>
         </div>
