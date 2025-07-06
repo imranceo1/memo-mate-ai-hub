@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import Chat from "./pages/Chat";
 import Timeline from "./pages/Timeline";
 import Reminders from "./pages/Reminders";
+import Sharing from "./pages/Sharing";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/chat" element={<Chat />} />
               <Route path="/timeline" element={<Timeline />} />
               <Route path="/reminders" element={<Reminders />} />
+              <Route path="/sharing" element={<Sharing />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

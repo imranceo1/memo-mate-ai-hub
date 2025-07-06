@@ -1,69 +1,111 @@
 
-import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Calendar, Settings, User, Bell, MessageCircle, LayoutDashboard } from 'lucide-react';
+import { 
+  LayoutDashboard, 
+  Clock, 
+  MessageSquare, 
+  Bell, 
+  Share2,
+  Settings, 
+  Menu,
+  X
+} from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { useState } from 'react';
 import ThemeSelector from './ThemeSelector';
 import LanguageSelector from './LanguageSelector';
-import { useLanguage } from '@/contexts/LanguageContext';
 
-const Navbar: React.FC = () => {
+const Navbar = () => {
   const location = useLocation();
   const { t } = useLanguage();
-  
+  const [isOpen, setIsOpen] = useState(false);
+
   const navItems = [
-    { path: '/dashboard', icon: LayoutDashboard, label: t('dashboard') },
-    { path: '/timeline', icon: Calendar, label: t('timeline') },
-    { path: '/chat', icon: MessageCircle, label: t('chat') },
-    { path: '/reminders', icon: Bell, label: t('reminders') },
-    { path: '/settings', icon: Settings, label: t('settings') },
+    { name: t('dashboard'), path: '/dashboard', icon: LayoutDashboard },
+    { name: t('timeline'), path: '/timeline', icon: Clock },
+    { name: t('chat'), path: '/chat', icon: MessageSquare },
+    { name: t('reminders'), path: '/reminders', icon: Bell },
+    { name: t('taskSharing'), path: '/sharing', icon: Share2 },
+    { name: t('settings'), path: '/settings', icon: Settings },
   ];
 
+  const isActive = (path: string) => location.pathname === path;
+
+  const NavLink = ({ item, onClick }: { item: typeof navItems[0], onClick?: () => void }) => (
+    <Link
+      to={item.path}
+      onClick={onClick}
+      className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-md ${
+        isActive(item.path)
+          ? 'bg-primary text-primary-foreground shadow-lg scale-105'
+          : 'text-foreground hover:bg-muted'
+      }`}
+    >
+      <item.icon className="h-5 w-5 flex-shrink-0" />
+      <span className="font-medium">{item.name}</span>
+    </Link>
+  );
+
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4">
-        <div className="flex h-14 items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-7 h-7 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">M</span>
-            </div>
-            <span className="text-lg font-bold text-foreground">MemoMate</span>
-          </Link>
-
-          <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`
-                    flex items-center space-x-1 px-3 py-1.5 rounded-lg transition-colors text-sm font-medium
-                    ${isActive 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                    }
-                  `}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <LanguageSelector />
-            <ThemeSelector />
-            <Button variant="outline" size="icon" className="w-8 h-8">
-              <User className="w-4 h-4" />
-            </Button>
-          </div>
+    <>
+      {/* Desktop Navbar */}
+      <nav className="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-card border-r border-border flex-col z-40">
+        <div className="p-6 border-b border-border">
+          <h1 className="text-2xl font-bold text-primary">MemoMate</h1>
         </div>
+        
+        <div className="flex-1 p-4 space-y-2">
+          {navItems.map((item) => (
+            <NavLink key={item.path} item={item} />
+          ))}
+        </div>
+
+        <div className="p-4 border-t border-border space-y-3">
+          <ThemeSelector />
+          <LanguageSelector />
+        </div>
+      </nav>
+
+      {/* Mobile Navbar */}
+      <div className="lg:hidden">
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="fixed top-4 left-4 z-50 bg-background border border-border shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-0">
+            <div className="flex flex-col h-full">
+              <div className="p-6 border-b border-border flex items-center justify-between">
+                <h1 className="text-2xl font-bold text-primary">MemoMate</h1>
+                <SheetClose asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <X className="h-4 w-4" />
+                  </Button>
+                </SheetClose>
+              </div>
+              
+              <div className="flex-1 p-4 space-y-2">
+                {navItems.map((item) => (
+                  <NavLink key={item.path} item={item} onClick={() => setIsOpen(false)} />
+                ))}
+              </div>
+
+              <div className="p-4 border-t border-border space-y-3">
+                <ThemeSelector />
+                <LanguageSelector />
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
-    </nav>
+    </>
   );
 };
 
