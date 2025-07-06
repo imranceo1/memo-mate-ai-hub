@@ -22,15 +22,15 @@ const Navbar: React.FC = () => {
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">M</span>
+        <div className="flex h-14 items-center justify-between">
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="w-7 h-7 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">M</span>
             </div>
-            <span className="text-xl font-bold text-foreground">MemoMate</span>
+            <span className="text-lg font-bold text-foreground">MemoMate</span>
           </Link>
 
-          <div className="hidden md:flex items-center space-x-2">
+          <div className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -40,7 +40,7 @@ const Navbar: React.FC = () => {
                   key={item.path}
                   to={item.path}
                   className={`
-                    flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium
+                    flex items-center space-x-1 px-3 py-1.5 rounded-lg transition-colors text-sm font-medium
                     ${isActive 
                       ? 'bg-primary text-primary-foreground' 
                       : 'text-muted-foreground hover:text-foreground hover:bg-accent'
@@ -54,10 +54,10 @@ const Navbar: React.FC = () => {
             })}
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
             <LanguageSelector />
             <ThemeSelector />
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" className="w-8 h-8">
               <User className="w-4 h-4" />
             </Button>
           </div>

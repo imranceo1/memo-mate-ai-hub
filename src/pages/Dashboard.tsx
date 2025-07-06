@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Calendar, CheckCircle, Clock, TrendingUp, Star, Bell } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,12 +9,13 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 const Dashboard: React.FC = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   const stats = [
-    { icon: CheckCircle, label: 'Tasks Completed', value: '24', change: '+12%', color: 'text-green-600' },
-    { icon: Clock, label: 'Pending Tasks', value: '8', change: '-5%', color: 'text-orange-600' },
-    { icon: TrendingUp, label: 'Productivity Score', value: '87%', change: '+3%', color: 'text-blue-600' },
-    { icon: Star, label: 'Streak Days', value: '15', change: '+1', color: 'text-purple-600' },
+    { icon: CheckCircle, label: t('tasksCompleted'), value: '24', change: '+12%', color: 'text-green-600' },
+    { icon: Clock, label: t('pendingTasks'), value: '8', change: '-5%', color: 'text-orange-600' },
+    { icon: TrendingUp, label: t('productivityScore'), value: '87%', change: '+3%', color: 'text-blue-600' },
+    { icon: Star, label: t('streakDays'), value: '15', change: '+1', color: 'text-purple-600' },
   ];
 
   const recentTasks = [
@@ -32,6 +34,23 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case 'addTask':
+        navigate('/timeline', { state: { openAddTask: true } });
+        break;
+      case 'setReminder':
+        navigate('/reminders');
+        break;
+      case 'viewAnalytics':
+        // For now, stay on dashboard (could create analytics page later)
+        break;
+      case 'viewAllTasks':
+        navigate('/timeline');
+        break;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -39,8 +58,8 @@ const Dashboard: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8 animate-fade-in">
-          <h1 className="text-3xl font-bold mb-2 text-foreground">Good morning! 👋</h1>
-          <p className="text-muted-foreground">You have 8 tasks due today. Let's get productive!</p>
+          <h1 className="text-3xl font-bold mb-2 text-foreground">{t('goodMorning')}</h1>
+          <p className="text-muted-foreground">{t('tasksToday')}</p>
         </div>
 
         {/* Stats Grid */}
@@ -73,7 +92,7 @@ const Dashboard: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-card-foreground">
                   <Calendar className="w-5 h-5" />
-                  Upcoming Tasks
+                  {t('upcomingTasks')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -95,8 +114,12 @@ const Dashboard: React.FC = () => {
                     </div>
                   ))}
                 </div>
-                <Button className="w-full mt-4" variant="outline">
-                  View All Tasks
+                <Button 
+                  className="w-full mt-4" 
+                  variant="outline"
+                  onClick={() => handleQuickAction('viewAllTasks')}
+                >
+                  {t('viewAllTasks')}
                 </Button>
               </CardContent>
             </Card>
@@ -106,40 +129,52 @@ const Dashboard: React.FC = () => {
           <div className="space-y-6">
             <Card className="animate-slide-in bg-card text-card-foreground" style={{ animationDelay: '0.2s' }}>
               <CardHeader>
-                <CardTitle className="text-card-foreground">Quick Actions</CardTitle>
+                <CardTitle className="text-card-foreground">{t('quickActions')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full justify-start" variant="outline">
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => handleQuickAction('addTask')}
+                >
                   <Calendar className="w-4 h-4 mr-2" />
-                  Add New Task
+                  {t('addNewTask')}
                 </Button>
-                <Button className="w-full justify-start" variant="outline">
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => handleQuickAction('setReminder')}
+                >
                   <Bell className="w-4 h-4 mr-2" />
-                  Set Reminder
+                  {t('setReminder')}
                 </Button>
-                <Button className="w-full justify-start" variant="outline">
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => handleQuickAction('viewAnalytics')}
+                >
                   <Star className="w-4 h-4 mr-2" />
-                  View Analytics
+                  {t('viewAnalytics')}
                 </Button>
               </CardContent>
             </Card>
 
             <Card className="animate-slide-in bg-card text-card-foreground" style={{ animationDelay: '0.3s' }}>
               <CardHeader>
-                <CardTitle className="text-card-foreground">AI Insights</CardTitle>
+                <CardTitle className="text-card-foreground">{t('aiInsights')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="p-3 bg-primary/5 rounded-lg border-l-4 border-primary">
-                    <p className="text-sm font-medium text-foreground">💡 Productivity Tip</p>
+                    <p className="text-sm font-medium text-foreground">{t('productivityTip')}</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      You're most productive between 9-11 AM. Schedule important tasks during this window.
+                      {t('productivityTipText')}
                     </p>
                   </div>
                   <div className="p-3 bg-accent/5 rounded-lg border-l-4 border-accent">
-                    <p className="text-sm font-medium text-foreground">📊 Weekly Summary</p>
+                    <p className="text-sm font-medium text-foreground">{t('weeklySummary')}</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      You completed 85% of tasks this week. Great job staying consistent!
+                      {t('weeklySummaryText')}
                     </p>
                   </div>
                 </div>

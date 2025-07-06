@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Plus, Calendar, Clock, Flag, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,11 +20,12 @@ interface Task {
   priority: 'low' | 'medium' | 'high';
   completed: boolean;
   source: 'manual' | 'gmail' | 'whatsapp' | 'calendar';
-  status: 'low' | 'medium' | 'high';
+  urgency: 'low' | 'medium' | 'high';
 }
 
 const Timeline: React.FC = () => {
   const { t } = useLanguage();
+  const location = useLocation();
   const [tasks, setTasks] = useState<Task[]>([
     {
       id: 1,
@@ -34,7 +36,7 @@ const Timeline: React.FC = () => {
       priority: 'high',
       completed: false,
       source: 'gmail',
-      status: 'high'
+      urgency: 'high'
     },
     {
       id: 2,
@@ -45,7 +47,7 @@ const Timeline: React.FC = () => {
       priority: 'medium',
       completed: false,
       source: 'calendar',
-      status: 'medium'
+      urgency: 'medium'
     },
     {
       id: 3,
@@ -56,7 +58,7 @@ const Timeline: React.FC = () => {
       priority: 'low',
       completed: false,
       source: 'manual',
-      status: 'low'
+      urgency: 'low'
     }
   ]);
 
@@ -66,10 +68,17 @@ const Timeline: React.FC = () => {
     dueDate: '',
     dueTime: '',
     priority: 'medium' as Task['priority'],
-    status: 'medium' as Task['status']
+    urgency: 'medium' as Task['urgency']
   });
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Handle navigation from dashboard
+  useEffect(() => {
+    if (location.state?.openAddTask) {
+      setIsDialogOpen(true);
+    }
+  }, [location.state]);
 
   const handleAddTask = () => {
     if (!newTask.title.trim() || !newTask.dueDate || !newTask.dueTime) {
@@ -91,7 +100,7 @@ const Timeline: React.FC = () => {
       dueDate: '',
       dueTime: '',
       priority: 'medium',
-      status: 'medium'
+      urgency: 'medium'
     });
     setIsDialogOpen(false);
   };
@@ -166,7 +175,7 @@ const Timeline: React.FC = () => {
                           task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' :
                           'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                         }`}>
-                          {task.priority}
+                          {t(task.priority)}
                         </span>
                       </div>
                       
@@ -183,16 +192,16 @@ const Timeline: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-1">
                           <Flag className="w-4 h-4" />
-                          {task.source}
+                          {t(task.source)}
                         </div>
                         <div className="flex items-center gap-1">
-                          <span className="text-xs font-medium">Status:</span>
+                          <span className="text-xs font-medium">{t('urgency')}:</span>
                           <span className={`text-xs font-medium ${
-                            task.status === 'high' ? 'text-red-600 dark:text-red-400' :
-                            task.status === 'medium' ? 'text-yellow-600 dark:text-yellow-400' :
+                            task.urgency === 'high' ? 'text-red-600 dark:text-red-400' :
+                            task.urgency === 'medium' ? 'text-yellow-600 dark:text-yellow-400' :
                             'text-green-600 dark:text-green-400'
                           }`}>
-                            {task.status}
+                            {t(task.urgency)}
                           </span>
                         </div>
                       </div>
@@ -233,7 +242,7 @@ const Timeline: React.FC = () => {
                       id="title"
                       value={newTask.title}
                       onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                      placeholder="Enter task title"
+                      placeholder={t('taskTitle')}
                       className="bg-background text-foreground border-border"
                     />
                   </div>
@@ -244,7 +253,7 @@ const Timeline: React.FC = () => {
                       id="description"
                       value={newTask.description}
                       onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                      placeholder="Enter task description"
+                      placeholder={t('description')}
                       className="bg-background text-foreground border-border"
                     />
                   </div>
@@ -287,11 +296,11 @@ const Timeline: React.FC = () => {
                       </select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="status" className="text-sm font-medium text-foreground">{t('status')}</Label>
+                      <Label htmlFor="urgency" className="text-sm font-medium text-foreground">{t('urgency')}</Label>
                       <select
-                        id="status"
-                        value={newTask.status}
-                        onChange={(e) => setNewTask({ ...newTask, status: e.target.value as Task['status'] })}
+                        id="urgency"
+                        value={newTask.urgency}
+                        onChange={(e) => setNewTask({ ...newTask, urgency: e.target.value as Task['urgency'] })}
                         className="w-full p-2 border rounded-md bg-background text-foreground border-border"
                       >
                         <option value="low">{t('low')}</option>
@@ -319,19 +328,19 @@ const Timeline: React.FC = () => {
                   <span className="font-semibold text-foreground">{tasks.length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Completed</span>
+                  <span className="text-sm text-muted-foreground">{t('complete')}</span>
                   <span className="font-semibold text-green-600">
                     {tasks.filter(t => t.completed).length}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Pending</span>
+                  <span className="text-sm text-muted-foreground">{t('pending')}</span>
                   <span className="font-semibold text-orange-600">
                     {tasks.filter(t => !t.completed).length}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">High Priority</span>
+                  <span className="text-sm text-muted-foreground">{t('high')} {t('priority')}</span>
                   <span className="font-semibold text-red-600">
                     {tasks.filter(t => t.priority === 'high' && !t.completed).length}
                   </span>
@@ -339,26 +348,25 @@ const Timeline: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* AI Extraction Status */}
             <Card className="animate-bounce-in bg-card border-border" style={{ animationDelay: '0.1s' }}>
               <CardHeader>
                 <CardTitle className="text-lg text-card-foreground">AI Extraction</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-foreground">📧 Gmail</span>
+                  <span className="text-foreground">📧 {t('gmail')}</span>
                   <span className="text-green-600 font-medium">Active</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-foreground">💬 WhatsApp</span>
+                  <span className="text-foreground">💬 {t('whatsapp')}</span>
                   <span className="text-yellow-600 font-medium">Setup</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-foreground">📅 Calendar</span>
+                  <span className="text-foreground">📅 {t('calendar')}</span>
                   <span className="text-green-600 font-medium">Active</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-foreground">📱 SMS</span>
+                  <span className="text-foreground">📱 {t('sms')}</span>
                   <span className="text-gray-600 font-medium">Disabled</span>
                 </div>
                 <Button variant="outline" size="sm" className="w-full mt-3 bg-background text-foreground border-border hover:bg-muted">

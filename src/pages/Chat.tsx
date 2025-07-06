@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { Send, MessageCircle, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Navbar from '@/components/Navbar';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Message {
   id: number;
@@ -14,6 +14,7 @@ interface Message {
 }
 
 const Chat: React.FC = () => {
+  const { t } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -94,9 +95,9 @@ const Chat: React.FC = () => {
         <div className="mb-8 animate-fade-in">
           <h1 className="text-3xl font-bold mb-2 flex items-center gap-2 text-foreground">
             <Sparkles className="w-8 h-8 text-primary" />
-            AI Assistant
+            {t('aiAssistant')}
           </h1>
-          <p className="text-muted-foreground">Chat with your personal productivity AI</p>
+          <p className="text-muted-foreground">{t('chatWithAI')}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -106,12 +107,12 @@ const Chat: React.FC = () => {
               <CardHeader className="border-b border-border">
                 <CardTitle className="flex items-center gap-2 text-card-foreground">
                   <MessageCircle className="w-5 h-5" />
-                  Chat with MemoMate AI
+                  {t('chatWithMemoMate')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col">
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto space-y-4 mb-4">
+                <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-4">
                   {messages.map((message) => (
                     <div
                       key={message.id}
@@ -119,7 +120,7 @@ const Chat: React.FC = () => {
                     >
                       <div
                         className={`
-                          max-w-[80%] p-3 rounded-lg
+                          max-w-[80%] p-4 rounded-lg
                           ${message.isUser
                             ? 'bg-primary text-primary-foreground'
                             : 'bg-muted text-foreground border border-border'
@@ -136,7 +137,7 @@ const Chat: React.FC = () => {
                   
                   {isTyping && (
                     <div className="flex justify-start">
-                      <div className="bg-muted text-foreground p-3 rounded-lg border border-border">
+                      <div className="bg-muted text-foreground p-4 rounded-lg border border-border">
                         <div className="flex space-x-1">
                           <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
                           <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -148,44 +149,46 @@ const Chat: React.FC = () => {
                 </div>
 
                 {/* Input */}
-                <form onSubmit={handleSubmit} className="flex gap-2">
-                  <Input
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder="Ask me anything about your tasks or MemoMate..."
-                    className="flex-1 bg-background text-foreground border-border"
-                  />
-                  <Button type="submit" disabled={!inputMessage.trim() || isTyping}>
-                    <Send className="w-4 h-4" />
-                  </Button>
-                </form>
+                <div className="p-4 border-t border-border">
+                  <form onSubmit={handleSubmit} className="flex gap-2">
+                    <Input
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      placeholder={t('askAnything')}
+                      className="flex-1 bg-background text-foreground border-border"
+                    />
+                    <Button type="submit" disabled={!inputMessage.trim() || isTyping}>
+                      <Send className="w-4 h-4" />
+                    </Button>
+                  </form>
+                </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Quick Questions */}
+          {/* Quick Questions Sidebar */}
           <div className="animate-slide-in" style={{ animationDelay: '0.2s' }}>
-            <Card className="bg-card border-border">
+            <Card className="bg-card border-border mb-6">
               <CardHeader>
-                <CardTitle className="text-lg text-card-foreground">Quick Questions</CardTitle>
+                <CardTitle className="text-lg text-card-foreground">{t('quickQuestions')}</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-2">
                 {quickQuestions.map((question, index) => (
                   <Button
                     key={index}
                     variant="outline"
-                    className="w-full text-left justify-start h-auto p-4 text-sm bg-background hover:bg-muted text-foreground border-border hover:border-primary/50 transition-all duration-200"
+                    className="w-full text-left justify-start h-auto p-3 text-sm bg-background hover:bg-muted text-foreground border-border hover:border-primary/50 transition-all duration-200"
                     onClick={() => handleSendMessage(question)}
                   >
-                    <span className="leading-relaxed">{question}</span>
+                    <span className="leading-relaxed text-left">{question}</span>
                   </Button>
                 ))}
               </CardContent>
             </Card>
 
-            <Card className="mt-6 bg-card border-border">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-lg text-card-foreground">AI Features</CardTitle>
+                <CardTitle className="text-lg text-card-foreground">{t('aiFeatures')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 text-sm">
                 <div className="flex items-start gap-3">
