@@ -123,6 +123,15 @@ const Timeline: React.FC = () => {
     }
   };
 
+  const getTranslatedText = (key: string) => {
+    // Helper function to safely translate known keys
+    const knownKeys = ['low', 'medium', 'high', 'normal', 'urgent', 'manual', 'gmail', 'whatsapp', 'calendar', 'sms', 'pending', 'completed'];
+    if (knownKeys.includes(key)) {
+      return t(key as keyof typeof t);
+    }
+    return key; // Return the original string if not a known translation key
+  };
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Animated background */}
@@ -297,7 +306,7 @@ const Timeline: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-1">
                       <User className="w-4 h-4" />
-                      <span className="capitalize">{t(task.source)}</span>
+                      <span className="capitalize">{getTranslatedText(task.source)}</span>
                     </div>
                   </div>
                   
@@ -307,14 +316,14 @@ const Timeline: React.FC = () => {
                       task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300' :
                       'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300'
                     }`}>
-                      {t(task.priority)}
+                      {getTranslatedText(task.priority)}
                     </span>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       task.status === 'completed' 
                         ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300' 
                         : 'bg-gray-100 text-gray-700 dark:bg-gray-900/20 dark:text-gray-300'
                     }`}>
-                      {t(task.status)}
+                      {getTranslatedText(task.status)}
                     </span>
                   </div>
                 </div>
