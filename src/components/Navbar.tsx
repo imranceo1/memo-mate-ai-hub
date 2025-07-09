@@ -8,7 +8,9 @@ import {
   Share2,
   Settings, 
   Menu,
-  X
+  X,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
@@ -21,6 +23,7 @@ const Navbar = () => {
   const location = useLocation();
   const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const navItems = [
     { name: t('dashboard'), path: '/dashboard', icon: LayoutDashboard },
@@ -41,19 +44,31 @@ const Navbar = () => {
         isActive(item.path)
           ? 'bg-primary text-primary-foreground shadow-lg scale-105'
           : 'text-foreground hover:bg-muted'
-      }`}
+      } ${isCollapsed ? 'justify-center' : ''}`}
+      title={isCollapsed ? item.name : ''}
     >
       <item.icon className="h-5 w-5 flex-shrink-0" />
-      <span className="font-medium">{item.name}</span>
+      {!isCollapsed && <span className="font-medium">{item.name}</span>}
     </Link>
   );
 
   return (
     <>
       {/* Desktop Navbar */}
-      <nav className="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-card border-r border-border flex-col z-40">
-        <div className="p-6 border-b border-border">
-          <h1 className="text-2xl font-bold text-primary">MemoMate</h1>
+      <nav className={`hidden lg:flex fixed left-0 top-0 h-full bg-card border-r border-border flex-col z-40 transition-all duration-300 ${
+        isCollapsed ? 'w-16' : 'w-64'
+      }`}>
+        <div className="p-6 border-b border-border flex items-center justify-between">
+          {!isCollapsed && <h1 className="text-2xl font-bold text-primary">MemoMate</h1>}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="h-8 w-8 hover:bg-muted transition-colors"
+            title={isCollapsed ? t('expandSidebar') : t('collapseSidebar')}
+          >
+            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </Button>
         </div>
         
         <div className="flex-1 p-4 space-y-2">
@@ -62,9 +77,13 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="p-4 border-t border-border space-y-3">
-          <ThemeSelector />
-          <LanguageSelector />
+        <div className={`p-4 border-t border-border space-y-3 ${isCollapsed ? 'items-center' : ''}`}>
+          <div className={isCollapsed ? 'flex justify-center' : ''}>
+            <ThemeSelector />
+          </div>
+          <div className={isCollapsed ? 'flex justify-center' : ''}>
+            <LanguageSelector />
+          </div>
         </div>
       </nav>
 
