@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Send, MessageCircle, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,7 @@ interface Message {
 
 const Chat: React.FC = () => {
   const { t } = useLanguage();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -33,6 +34,14 @@ const Chat: React.FC = () => {
     t('showProductivityStats'),
     t('howDataProtection'),
   ];
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
@@ -101,7 +110,7 @@ const Chat: React.FC = () => {
       
       <Navbar />
       
-      <div className="container mx-auto px-4 py-8 max-w-4xl relative z-10">
+      <div className="container mx-auto px-4 py-8 max-w-6xl relative z-10">
         <div className="mb-8 animate-fade-in">
           <h1 className="text-3xl font-bold mb-2 flex items-center gap-2 text-foreground">
             <Sparkles className="w-8 h-8 text-primary" />
@@ -114,15 +123,15 @@ const Chat: React.FC = () => {
           {/* Chat Area */}
           <div className="lg:col-span-3">
             <Card className="h-[600px] flex flex-col animate-slide-in border-border bg-card/95 backdrop-blur">
-              <CardHeader className="border-b border-border">
+              <CardHeader className="border-b border-border flex-shrink-0">
                 <CardTitle className="flex items-center gap-2 text-card-foreground">
                   <MessageCircle className="w-5 h-5" />
                   {t('chatWithMemoMate')}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="flex-1 flex flex-col">
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-4">
+              <CardContent className="flex-1 flex flex-col p-0 min-h-0">
+                {/* Messages Container */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
                   {messages.map((message) => (
                     <div
                       key={message.id}
@@ -130,14 +139,16 @@ const Chat: React.FC = () => {
                     >
                       <div
                         className={`
-                          max-w-[80%] p-4 rounded-lg
+                          max-w-[75%] p-3 rounded-lg break-words overflow-wrap-anywhere
                           ${message.isUser
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-muted text-foreground border border-border'
+                            ? 'bg-primary text-primary-foreground rounded-br-sm'
+                            : 'bg-muted text-foreground border border-border rounded-bl-sm'
                           }
                         `}
                       >
-                        <p className="whitespace-pre-line text-sm leading-relaxed">{message.content}</p>
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap word-break break-words">
+                          {message.content}
+                        </p>
                         <p className="text-xs opacity-70 mt-2">
                           {message.timestamp.toLocaleTimeString()}
                         </p>
@@ -147,7 +158,7 @@ const Chat: React.FC = () => {
                   
                   {isTyping && (
                     <div className="flex justify-start">
-                      <div className="bg-muted text-foreground p-4 rounded-lg border border-border">
+                      <div className="bg-muted text-foreground p-3 rounded-lg border border-border rounded-bl-sm max-w-[75%]">
                         <div className="flex space-x-1">
                           <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
                           <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -156,10 +167,11 @@ const Chat: React.FC = () => {
                       </div>
                     </div>
                   )}
+                  <div ref={messagesEndRef} />
                 </div>
 
-                {/* Input */}
-                <div className="p-4 border-t border-border">
+                {/* Input Area */}
+                <div className="p-4 border-t border-border flex-shrink-0 bg-card">
                   <form onSubmit={handleSubmit} className="flex gap-2">
                     <Input
                       value={inputMessage}
@@ -170,7 +182,7 @@ const Chat: React.FC = () => {
                     <Button 
                       type="submit" 
                       disabled={!inputMessage.trim() || isTyping}
-                      className="transform transition-all duration-150 hover:scale-105 active:scale-95"
+                      className="transform transition-all duration-150 hover:scale-105 active:scale-95 flex-shrink-0"
                     >
                       <Send className="w-4 h-4" />
                     </Button>
@@ -194,7 +206,7 @@ const Chat: React.FC = () => {
                     className="w-full text-left justify-start h-auto p-4 text-sm bg-background hover:bg-muted text-foreground border-border hover:border-primary/50 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] leading-relaxed break-words whitespace-normal"
                     onClick={() => handleSendMessage(question)}
                   >
-                    <span className="text-left block">{question}</span>
+                    <span className="text-left block break-words overflow-wrap-anywhere">{question}</span>
                   </Button>
                 ))}
               </CardContent>
@@ -207,19 +219,19 @@ const Chat: React.FC = () => {
               <CardContent className="space-y-4 text-sm">
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-foreground leading-relaxed">{t('aiFeature1')}</p>
+                  <p className="text-foreground leading-relaxed break-words">{t('aiFeature1')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-foreground leading-relaxed">{t('aiFeature2')}</p>
+                  <p className="text-foreground leading-relaxed break-words">{t('aiFeature2')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-foreground leading-relaxed">{t('aiFeature3')}</p>
+                  <p className="text-foreground leading-relaxed break-words">{t('aiFeature3')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-foreground leading-relaxed">{t('aiFeature4')}</p>
+                  <p className="text-foreground leading-relaxed break-words">{t('aiFeature4')}</p>
                 </div>
               </CardContent>
             </Card>
