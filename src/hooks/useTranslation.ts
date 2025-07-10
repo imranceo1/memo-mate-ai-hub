@@ -2,20 +2,26 @@
 import { useCallback, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { landingTranslations } from '@/i18n/translations/landing';
+import { settingsTranslations } from '@/i18n/translations/settings';
+import { remindersTranslations } from '@/i18n/translations/reminders';
+import { commonTranslations } from '@/i18n/translations/common';
 
-type TranslationModule = 'landing';
-type LandingKeys = keyof typeof landingTranslations.en;
+type TranslationModule = 'landing' | 'settings' | 'reminders' | 'common';
+
+const translationModules = {
+  landing: landingTranslations,
+  settings: settingsTranslations,
+  reminders: remindersTranslations,
+  common: commonTranslations,
+};
 
 export const useTranslation = (module?: TranslationModule) => {
   const { language } = useLanguage();
   
   const translations = useMemo(() => {
-    switch (module) {
-      case 'landing':
-        return landingTranslations[language] || landingTranslations.en;
-      default:
-        return {};
-    }
+    if (!module) return {};
+    const moduleTranslations = translationModules[module];
+    return moduleTranslations?.[language] || moduleTranslations?.en || {};
   }, [language, module]);
   
   const t = useCallback((key: string) => {
@@ -25,14 +31,23 @@ export const useTranslation = (module?: TranslationModule) => {
   return { t, language };
 };
 
-// Specific hook for landing page
+// Specific hooks for each module
 export const useLandingTranslation = () => {
-  const { language } = useLanguage();
-  
-  const t = useCallback((key: LandingKeys) => {
-    const translations = landingTranslations[language] || landingTranslations.en;
-    return translations[key] || key;
-  }, [language]);
-  
+  const { t, language } = useTranslation('landing');
+  return { t, language };
+};
+
+export const useSettingsTranslation = () => {
+  const { t, language } = useTranslation('settings');
+  return { t, language };
+};
+
+export const useRemindersTranslation = () => {
+  const { t, language } = useTranslation('reminders');
+  return { t, language };
+};
+
+export const useCommonTranslation = () => {
+  const { t, language } = useTranslation('common');
   return { t, language };
 };

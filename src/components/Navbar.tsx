@@ -12,7 +12,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useCommonTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { useState } from 'react';
@@ -21,7 +21,7 @@ import LanguageSelector from './LanguageSelector';
 
 const Navbar = () => {
   const location = useLocation();
-  const { t } = useLanguage();
+  const { t } = useCommonTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -48,7 +48,7 @@ const Navbar = () => {
       title={isCollapsed ? item.name : ''}
     >
       <item.icon className="h-5 w-5 flex-shrink-0" />
-      {!isCollapsed && <span className="font-medium">{item.name}</span>}
+      {!isCollapsed && <span className="font-medium break-words">{item.name}</span>}
     </Link>
   );
 
@@ -59,7 +59,7 @@ const Navbar = () => {
         isCollapsed ? 'w-16' : 'w-64'
       }`}>
         <div className="p-6 border-b border-border flex items-center justify-between">
-          {!isCollapsed && <h1 className="text-2xl font-bold text-primary">MemoMate</h1>}
+          {!isCollapsed && <h1 className="text-2xl font-bold text-primary break-words">MemoMate</h1>}
           <Button
             variant="ghost"
             size="icon"
@@ -102,7 +102,7 @@ const Navbar = () => {
           <SheetContent side="left" className="w-64 p-0">
             <div className="flex flex-col h-full">
               <div className="p-6 border-b border-border flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-primary">MemoMate</h1>
+                <h1 className="text-2xl font-bold text-primary break-words">MemoMate</h1>
                 <SheetClose asChild>
                   <Button variant="ghost" size="icon" className="h-8 w-8">
                     <X className="h-4 w-4" />
