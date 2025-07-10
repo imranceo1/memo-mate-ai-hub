@@ -15,15 +15,19 @@ import {
 import { useCommonTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
-import { useState } from 'react';
-import ThemeSelector from './ThemeSelector';
-import LanguageSelector from './LanguageSelector';
+import { useState, useEffect } from 'react';
 
 const Navbar = () => {
   const location = useLocation();
   const { t } = useCommonTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Update CSS custom property when collapsed state changes
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--sidebar-width', isCollapsed ? '4rem' : '16rem');
+  }, [isCollapsed]);
 
   const navItems = [
     { name: t('dashboard'), path: '/dashboard', icon: LayoutDashboard },
@@ -40,65 +44,70 @@ const Navbar = () => {
     <Link
       to={item.path}
       onClick={onClick}
-      className={`flex items-center px-4 py-3 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-md ${
+      className={`flex items-center px-3 py-3 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-md ${
         isActive(item.path)
           ? 'bg-primary text-primary-foreground shadow-lg scale-105'
           : 'text-foreground hover:bg-muted'
-      } ${isCollapsed ? 'justify-center' : 'space-x-3'}`}
+      } ${isCollapsed ? 'justify-center px-2' : 'space-x-3'}`}
       title={isCollapsed ? item.name : ''}
     >
       <item.icon className="h-5 w-5 flex-shrink-0" />
-      {!isCollapsed && <span className="font-medium break-words">{item.name}</span>}
+      {!isCollapsed && <span className="font-medium break-words text-sm">{item.name}</span>}
     </Link>
   );
 
   return (
     <>
       {/* Desktop Navbar */}
-      <nav className={`hidden lg:flex fixed left-0 top-0 h-full bg-card border-r border-border flex-col z-40 transition-all duration-300 ${
+      <nav className={`hidden lg:flex fixed left-0 top-0 h-full bg-card border-r border-border flex-col z-40 transition-all duration-300 ease-in-out ${
         isCollapsed ? 'w-16' : 'w-64'
       }`}>
-        <div className="p-4 border-b border-border flex items-center justify-between">
-          {!isCollapsed && (
-            <div className="flex items-center space-x-3">
-              <img 
-                src="/lovable-uploads/b3289de0-bc9f-4be4-9315-ffaa18fbb268.png" 
-                alt="MemoMate Brain Logo" 
-                className="w-8 h-8 object-contain"
-              />
-              <h1 className="text-xl font-bold text-primary break-words">MemoMate</h1>
-            </div>
-          )}
-          {isCollapsed && (
+        {/* Header Section */}
+        <div className="p-3 border-b border-border flex items-center justify-between min-h-[60px]">
+          <div className={`flex items-center transition-all duration-300 ${isCollapsed ? 'justify-center w-full' : 'space-x-3'}`}>
             <img 
               src="/lovable-uploads/b3289de0-bc9f-4be4-9315-ffaa18fbb268.png" 
               alt="MemoMate Brain Logo" 
-              className="w-8 h-8 object-contain mx-auto"
+              className="w-8 h-8 object-contain flex-shrink-0"
             />
+            {!isCollapsed && (
+              <h1 className="text-xl font-bold text-primary break-words">MemoMate</h1>
+            )}
+          </div>
+          {!isCollapsed && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="h-8 w-8 hover:bg-muted transition-colors flex-shrink-0"
+              title={t('collapseSidebar')}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="h-8 w-8 hover:bg-muted transition-colors flex-shrink-0"
-            title={isCollapsed ? t('expandSidebar') : t('collapseSidebar')}
-          >
-            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </Button>
         </div>
+
+        {/* Collapsed Toggle Button */}
+        {isCollapsed && (
+          <div className="p-2 border-b border-border flex justify-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="h-8 w-8 hover:bg-muted transition-colors"
+              title={t('expandSidebar')}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
         
-        <div className="flex-1 p-4 space-y-2 overflow-y-auto">
+        {/* Navigation Menu */}
+        <div className="flex-1 p-3 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink key={item.path} item={item} />
           ))}
         </div>
-
-        {!isCollapsed && (
-          <div className="p-4 border-t border-border space-y-3">
-            <ThemeSelector />
-            <LanguageSelector />
-          </div>
-        )}
       </nav>
 
       {/* Mobile Navbar */}
@@ -136,25 +145,10 @@ const Navbar = () => {
                   <NavLink key={item.path} item={item} onClick={() => setIsOpen(false)} />
                 ))}
               </div>
-
-              <div className="p-4 border-t border-border space-y-3">
-                <ThemeSelector />
-                <LanguageSelector />
-              </div>
             </div>
           </SheetContent>
         </Sheet>
       </div>
-
-      {/* Main content offset for desktop */}
-      <style jsx global>{`
-        @media (min-width: 1024px) {
-          .main-content {
-            margin-left: ${isCollapsed ? '4rem' : '16rem'};
-            transition: margin-left 0.3s ease;
-          }
-        }
-      `}</style>
     </>
   );
 };
