@@ -1,10 +1,9 @@
 
 import React from 'react';
-import { Settings as SettingsIcon, Palette, Globe, Shield, Bell, Trash2 } from 'lucide-react';
+import { Settings as SettingsIcon, Shield, Bell, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import ThemeSelector from '@/components/ThemeSelector';
 import Navbar from '@/components/Navbar';
 import { useSettingsTranslation } from '@/hooks/useTranslation';
 
@@ -39,7 +38,7 @@ const Settings: React.FC = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="container mx-auto px-4 py-8 max-w-7xl lg:ml-64">
         <div className="mb-8 animate-fade-in">
           <h1 className="text-3xl font-bold mb-2 flex items-center gap-2 break-words">
             <SettingsIcon className="w-8 h-8 text-primary flex-shrink-0" />
@@ -48,58 +47,9 @@ const Settings: React.FC = () => {
           <p className="text-muted-foreground break-words">{t('customizeExperience')}</p>
         </div>
 
-        {/* First Row - Appearance and Language */}
+        {/* First Row - Privacy and Notifications */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <Card className="animate-slide-in">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base sm:text-lg break-words">
-                <Palette className="w-5 h-5 flex-shrink-0" />
-                <span className="break-words">{t('appearance')}</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium mb-3 block break-words">{t('theme')}</label>
-                <ThemeSelector />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="animate-slide-in" style={{ animationDelay: '0.1s' }}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base sm:text-lg break-words">
-                <Globe className="w-5 h-5 flex-shrink-0" />
-                <span className="break-words">{t('languageRegion')}</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block break-words">{t('displayLanguage')}</label>
-                <select className="w-full p-2 border rounded-md bg-background text-sm">
-                  <option value="en">English</option>
-                  <option value="hi">Hindi (हिंदी)</option>
-                  <option value="ta">Tamil (தமிழ்)</option>
-                  <option value="te">Telugu (తెలుగు)</option>
-                  <option value="ko">Korean (한국어)</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block break-words">{t('timeZone')}</label>
-                <select className="w-full p-2 border rounded-md bg-background text-sm">
-                  <option value="UTC">UTC</option>
-                  <option value="America/New_York">Eastern Time</option>
-                  <option value="America/Los_Angeles">Pacific Time</option>
-                  <option value="Asia/Kolkata">India Standard Time</option>
-                  <option value="Asia/Seoul">Korea Standard Time</option>
-                </select>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Second Row - Privacy and Notifications */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <Card className="animate-slide-in" style={{ animationDelay: '0.2s' }}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg break-words">
                 <Shield className="w-5 h-5 flex-shrink-0" />
@@ -138,7 +88,7 @@ const Settings: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="animate-slide-in" style={{ animationDelay: '0.3s' }}>
+          <Card className="animate-slide-in" style={{ animationDelay: '0.1s' }}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg break-words">
                 <Bell className="w-5 h-5 flex-shrink-0" />
@@ -180,9 +130,9 @@ const Settings: React.FC = () => {
           </Card>
         </div>
 
-        {/* Third Row - Integrations */}
+        {/* Second Row - Integrations */}
         <div className="mb-6">
-          <Card className="animate-slide-in" style={{ animationDelay: '0.4s' }}>
+          <Card className="animate-slide-in" style={{ animationDelay: '0.2s' }}>
             <CardHeader>
               <CardTitle className="text-base sm:text-lg break-words">{t('integrations')}</CardTitle>
             </CardHeader>
@@ -213,8 +163,8 @@ const Settings: React.FC = () => {
           </Card>
         </div>
 
-        {/* Fourth Row - Data Management */}
-        <Card className="animate-slide-in border-destructive/20" style={{ animationDelay: '0.5s' }}>
+        {/* Third Row - Data Management */}
+        <Card className="animate-slide-in border-destructive/20" style={{ animationDelay: '0.3s' }}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-destructive text-base sm:text-lg break-words">
               <Trash2 className="w-5 h-5 flex-shrink-0" />

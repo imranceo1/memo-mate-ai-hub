@@ -40,11 +40,11 @@ const Navbar = () => {
     <Link
       to={item.path}
       onClick={onClick}
-      className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-md ${
+      className={`flex items-center px-4 py-3 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-md ${
         isActive(item.path)
           ? 'bg-primary text-primary-foreground shadow-lg scale-105'
           : 'text-foreground hover:bg-muted'
-      } ${isCollapsed ? 'justify-center' : ''}`}
+      } ${isCollapsed ? 'justify-center' : 'space-x-3'}`}
       title={isCollapsed ? item.name : ''}
     >
       <item.icon className="h-5 w-5 flex-shrink-0" />
@@ -58,7 +58,7 @@ const Navbar = () => {
       <nav className={`hidden lg:flex fixed left-0 top-0 h-full bg-card border-r border-border flex-col z-40 transition-all duration-300 ${
         isCollapsed ? 'w-16' : 'w-64'
       }`}>
-        <div className="p-6 border-b border-border flex items-center justify-between">
+        <div className="p-4 border-b border-border flex items-center justify-between">
           {!isCollapsed && (
             <div className="flex items-center space-x-3">
               <img 
@@ -66,7 +66,7 @@ const Navbar = () => {
                 alt="MemoMate Brain Logo" 
                 className="w-8 h-8 object-contain"
               />
-              <h1 className="text-2xl font-bold text-primary break-words">MemoMate</h1>
+              <h1 className="text-xl font-bold text-primary break-words">MemoMate</h1>
             </div>
           )}
           {isCollapsed && (
@@ -80,27 +80,25 @@ const Navbar = () => {
             variant="ghost"
             size="icon"
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="h-8 w-8 hover:bg-muted transition-colors"
+            className="h-8 w-8 hover:bg-muted transition-colors flex-shrink-0"
             title={isCollapsed ? t('expandSidebar') : t('collapseSidebar')}
           >
             {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
         </div>
         
-        <div className="flex-1 p-4 space-y-2">
+        <div className="flex-1 p-4 space-y-2 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink key={item.path} item={item} />
           ))}
         </div>
 
-        <div className={`p-4 border-t border-border space-y-3 ${isCollapsed ? 'items-center' : ''}`}>
-          <div className={isCollapsed ? 'flex justify-center' : ''}>
+        {!isCollapsed && (
+          <div className="p-4 border-t border-border space-y-3">
             <ThemeSelector />
-          </div>
-          <div className={isCollapsed ? 'flex justify-center' : ''}>
             <LanguageSelector />
           </div>
-        </div>
+        )}
       </nav>
 
       {/* Mobile Navbar */}
@@ -147,6 +145,16 @@ const Navbar = () => {
           </SheetContent>
         </Sheet>
       </div>
+
+      {/* Main content offset for desktop */}
+      <style jsx global>{`
+        @media (min-width: 1024px) {
+          .main-content {
+            margin-left: ${isCollapsed ? '4rem' : '16rem'};
+            transition: margin-left 0.3s ease;
+          }
+        }
+      `}</style>
     </>
   );
 };
