@@ -59,7 +59,23 @@ const Navbar = () => {
         isCollapsed ? 'w-16' : 'w-64'
       }`}>
         <div className="p-6 border-b border-border flex items-center justify-between">
-          {!isCollapsed && <h1 className="text-2xl font-bold text-primary break-words">MemoMate</h1>}
+          {!isCollapsed && (
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/lovable-uploads/b3289de0-bc9f-4be4-9315-ffaa18fbb268.png" 
+                alt="MemoMate Brain Logo" 
+                className="w-8 h-8 object-contain"
+              />
+              <h1 className="text-2xl font-bold text-primary break-words">MemoMate</h1>
+            </div>
+          )}
+          {isCollapsed && (
+            <img 
+              src="/lovable-uploads/b3289de0-bc9f-4be4-9315-ffaa18fbb268.png" 
+              alt="MemoMate Brain Logo" 
+              className="w-8 h-8 object-contain mx-auto"
+            />
+          )}
           <Button
             variant="ghost"
             size="icon"
@@ -102,7 +118,14 @@ const Navbar = () => {
           <SheetContent side="left" className="w-64 p-0">
             <div className="flex flex-col h-full">
               <div className="p-6 border-b border-border flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-primary break-words">MemoMate</h1>
+                <div className="flex items-center space-x-3">
+                  <img 
+                    src="/lovable-uploads/b3289de0-bc9f-4be4-9315-ffaa18fbb268.png" 
+                    alt="MemoMate Brain Logo" 
+                    className="w-8 h-8 object-contain"
+                  />
+                  <h1 className="text-2xl font-bold text-primary break-words">MemoMate</h1>
+                </div>
                 <SheetClose asChild>
                   <Button variant="ghost" size="icon" className="h-8 w-8">
                     <X className="h-4 w-4" />

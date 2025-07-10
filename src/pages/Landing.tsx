@@ -44,10 +44,12 @@ const Landing: React.FC = () => {
       {/* Header */}
       <header className="container mx-auto px-4 py-6 relative z-10">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-xl">M</span>
-            </div>
+          <div className="flex items-center space-x-3">
+            <img 
+              src="/lovable-uploads/b3289de0-bc9f-4be4-9315-ffaa18fbb268.png" 
+              alt="MemoMate Brain Logo" 
+              className="w-10 h-10 object-contain"
+            />
             <span className="text-2xl font-bold">MemoMate</span>
           </div>
           
@@ -132,10 +134,12 @@ const Landing: React.FC = () => {
       <footer className="border-t mt-20 relative z-10">
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <div className="w-6 h-6 bg-gradient-to-r from-primary to-accent rounded">
-                <span className="text-white font-bold text-sm flex items-center justify-center h-full">M</span>
-              </div>
+            <div className="flex items-center space-x-3 mb-4 md:mb-0">
+              <img 
+                src="/lovable-uploads/b3289de0-bc9f-4be4-9315-ffaa18fbb268.png" 
+                alt="MemoMate Brain Logo" 
+                className="w-6 h-6 object-contain"
+              />
               <span className="font-semibold">MemoMate</span>
             </div>
             <p className="text-sm text-muted-foreground">
