@@ -16,6 +16,8 @@ import { useCommonTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { useState, useEffect } from 'react';
+import LanguageSelector from './LanguageSelector';
+import ThemeSelector from './ThemeSelector';
 
 const Navbar = () => {
   const location = useLocation();
@@ -108,6 +110,16 @@ const Navbar = () => {
             <NavLink key={item.path} item={item} />
           ))}
         </div>
+
+        {/* Theme and Language Selectors */}
+        {!isCollapsed && (
+          <div className="p-3 border-t border-border space-y-2">
+            <div className="flex justify-between items-center">
+              <ThemeSelector />
+              <LanguageSelector />
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Mobile Navbar */}
@@ -144,6 +156,14 @@ const Navbar = () => {
                 {navItems.map((item) => (
                   <NavLink key={item.path} item={item} onClick={() => setIsOpen(false)} />
                 ))}
+              </div>
+
+              {/* Theme and Language Selectors for Mobile */}
+              <div className="p-4 border-t border-border">
+                <div className="flex justify-between items-center">
+                  <ThemeSelector />
+                  <LanguageSelector />
+                </div>
               </div>
             </div>
           </SheetContent>
