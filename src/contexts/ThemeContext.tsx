@@ -27,16 +27,18 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     const root = window.document.documentElement;
     
+    console.log('Applying theme:', theme);
+    
     // Remove all theme classes
-    root.classList.remove('theme-light', 'theme-dark', 'theme-blue');
+    root.classList.remove('light', 'dark', 'blue');
     
     // Add current theme class
-    if (theme !== 'light') {
-      root.classList.add(`theme-${theme}`);
-    }
+    root.classList.add(theme);
     
     // Save to localStorage
     localStorage.setItem('memomate-theme', theme);
+    
+    console.log('Document classes:', root.className);
   }, [theme]);
 
   return (
