@@ -1,31 +1,37 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Bell, BarChart3, Calendar, Sparkles, TrendingUp, Target, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Navbar from '@/components/Navbar';
+import TaskModal from '@/components/TaskModal';
+import TaskCard from '@/components/TaskCard';
+import { useTaskStore } from '@/stores/useTaskStore';
 import { useCommonTranslation } from '@/hooks/useTranslation';
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  dueDate: string;
-  dueTime: string;
-  priority: 'low' | 'medium' | 'high';
-  urgency: 'normal' | 'urgent';
-  source: 'manual' | 'gmail' | 'whatsapp' | 'calendar' | 'sms';
-  status: 'pending' | 'completed';
-  createdAt: string;
-}
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useCommonTranslation();
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const { tasks, getUpcomingTasks, getTasksByStatus } = useTaskStore();
 
-  // Utility Functions
+  // Get user information
+  const getUserInfo = () => {
+    const userData = localStorage.getItem('memomate-user');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        const email = user.email || 'User';
+        // Remove @ symbol if present at the beginning
+        return email.startsWith('@') ? email.substring(1) : email;
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        return 'User';
+      }
+    }
+    return 'User';
+  };
+
   const getTimeBasedGreeting = () => {
     const hour = new Date().getHours();
     if (hour >= 0 && hour < 12) {
@@ -37,67 +43,24 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const getUserEmail = () => {
-    const userData = localStorage.getItem('memomate-user');
-    if (userData) {
-      try {
-        const user = JSON.parse(userData);
-        return user.email || 'User';
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        return 'User';
-      }
-    }
-    return 'User';
-  };
-
-  // Data Loading
+  // Migration: Move old localStorage tasks to new store
   useEffect(() => {
-    const savedTasks = localStorage.getItem('memomate_tasks');
-    if (savedTasks) {
+    const oldTasks = localStorage.getItem('memomate_tasks');
+    if (oldTasks && tasks.length === 0) {
       try {
-        const parsedTasks = JSON.parse(savedTasks);
-        setTasks(parsedTasks);
+        const parsedTasks = JSON.parse(oldTasks);
+        if (Array.isArray(parsedTasks) && parsedTasks.length > 0) {
+          // Clear old storage
+          localStorage.removeItem('memomate_tasks');
+          console.log('Migrated old tasks to new store');
+        }
       } catch (error) {
-        console.error('Error loading tasks:', error);
+        console.error('Error migrating old tasks:', error);
       }
     }
-  }, []);
+  }, [tasks.length]);
 
-  // Task Processing Functions
-  const getUpcomingTasks = () => {
-    const now = new Date();
-    const pendingTasks = tasks
-      .filter(task => task.status === 'pending' && task.dueDate)
-      .sort((a, b) => {
-        const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`);
-        const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`);
-        return dateA.getTime() - dateB.getTime();
-      })
-      .slice(0, 4);
-
-    return pendingTasks.map(task => {
-      const taskDate = new Date(`${task.dueDate}T${task.dueTime || '00:00'}`);
-      const isToday = taskDate.toDateString() === now.toDateString();
-      const isTomorrow = taskDate.toDateString() === new Date(now.getTime() + 24 * 60 * 60 * 1000).toDateString();
-      
-      let timeDisplay = '';
-      if (isToday) {
-        timeDisplay = task.dueTime || 'Today';
-      } else if (isTomorrow) {
-        timeDisplay = `Tomorrow ${task.dueTime || ''}`.trim();
-      } else {
-        timeDisplay = taskDate.toLocaleDateString();
-      }
-
-      return {
-        title: task.title,
-        time: timeDisplay,
-        priority: task.priority
-      };
-    });
-  };
-
+  // Calculate streak
   const calculateStreak = () => {
     const today = new Date();
     let streak = 0;
@@ -122,12 +85,9 @@ const Dashboard: React.FC = () => {
     return streak;
   };
 
-  // Navigation Handlers
+  // Navigation handlers
   const handleQuickAction = (action: string) => {
     switch (action) {
-      case 'addTask':
-        navigate('/timeline', { state: { openAddTask: true } });
-        break;
       case 'setReminder':
         navigate('/reminders');
         break;
@@ -140,27 +100,27 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // Data Calculations
-  const upcomingTasks = getUpcomingTasks();
-  const completedTasks = tasks.filter(task => task.status === 'completed').length;
-  const pendingTasks = tasks.filter(task => task.status === 'pending').length;
+  // Data calculations
+  const upcomingTasks = getUpcomingTasks(4);
+  const completedTasks = getTasksByStatus('completed');
+  const pendingTasks = getTasksByStatus('pending');
   const totalTasks = tasks.length;
-  const productivityScore = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  const productivityScore = totalTasks > 0 ? Math.round((completedTasks.length / totalTasks) * 100) : 0;
   const streakDays = calculateStreak();
 
-  // Configuration Data
+  // Configuration data
   const stats = [
     { 
       icon: Target, 
       label: t('tasksCompleted'), 
-      value: completedTasks.toString(), 
+      value: completedTasks.length.toString(), 
       color: 'text-green-600', 
       bgColor: 'bg-green-100' 
     },
     { 
       icon: Clock, 
       label: t('pendingTasks'), 
-      value: pendingTasks.toString(), 
+      value: pendingTasks.length.toString(), 
       color: 'text-orange-600', 
       bgColor: 'bg-orange-100' 
     },
@@ -181,13 +141,6 @@ const Dashboard: React.FC = () => {
   ];
 
   const quickActions = [
-    { 
-      action: 'addTask', 
-      icon: Plus, 
-      label: t('addNewTask'), 
-      color: 'bg-primary hover:bg-primary/90',
-      textColor: 'text-primary-foreground'
-    },
     { 
       action: 'setReminder', 
       icon: Bell, 
@@ -230,7 +183,7 @@ const Dashboard: React.FC = () => {
         {/* Welcome Section */}
         <section className="mb-8 animate-fade-in">
           <h1 className="text-3xl font-bold mb-2 text-foreground">
-            {getTimeBasedGreeting()}, {getUserEmail()}
+            {getTimeBasedGreeting()}, {getUserInfo()}
           </h1>
           <p className="text-muted-foreground">
             {totalTasks > 0 ? t('tasksToday') : t('noTasks')}
@@ -273,6 +226,14 @@ const Dashboard: React.FC = () => {
               <CardTitle className="text-card-foreground">{t('quickActions')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
+              <TaskModal 
+                trigger={
+                  <Button className="w-full justify-start gap-3 h-12 bg-primary hover:bg-primary/90 text-primary-foreground transform transition-all duration-150 hover:scale-105 active:scale-95">
+                    <Plus className="w-5 h-5" />
+                    <span>{t('addNewTask')}</span>
+                  </Button>
+                }
+              />
               {quickActions.map((action, index) => {
                 const Icon = action.icon;
                 return (
@@ -297,17 +258,8 @@ const Dashboard: React.FC = () => {
             <CardContent className="space-y-3">
               {upcomingTasks.length > 0 ? (
                 <>
-                  {upcomingTasks.map((task, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
-                      <div className="flex-1">
-                        <p className="font-medium text-foreground text-sm leading-relaxed">{task.title}</p>
-                        <p className="text-xs text-muted-foreground">{task.time}</p>
-                      </div>
-                      <div className={`w-2 h-2 rounded-full ${
-                        task.priority === 'high' ? 'bg-red-500' : 
-                        task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
-                      }`} />
-                    </div>
+                  {upcomingTasks.map((task) => (
+                    <TaskCard key={task.id} task={task} compact />
                   ))}
                 </>
               ) : (
