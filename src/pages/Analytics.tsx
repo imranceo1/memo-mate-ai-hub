@@ -8,7 +8,10 @@ import { Progress } from '@/components/ui/progress';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
 import Navbar from '@/components/Navbar';
-import { useLanguage } from '@/contexts/LanguageContext';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import EmptyState from '@/components/EmptyState';
+import { useAnalyticsTranslation } from '@/hooks/useAnalyticsTranslation';
+import { useTaskStore } from '@/stores/useTaskStore';
 
 interface AnalyticsData {
   completedTasks: number;
@@ -22,7 +25,9 @@ interface AnalyticsData {
 }
 
 const Analytics = () => {
-  const { t } = useLanguage();
+  const { t } = useAnalyticsTranslation();
+  const { tasks } = useTaskStore();
+  const [isLoading, setIsLoading] = useState(true);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData>({
     completedTasks: 0,
     totalTasks: 0,
@@ -35,94 +40,128 @@ const Analytics = () => {
   });
 
   useEffect(() => {
-    // Generate analytics data from localStorage
     const generateAnalytics = () => {
-      // Get tasks from localStorage
-      const tasks = JSON.parse(localStorage.getItem('memomate-tasks') || '[]');
-      const reminders = JSON.parse(localStorage.getItem('memomate-reminders') || '[]');
-      const sharedTasks = JSON.parse(localStorage.getItem('memomate-shared-tasks') || '[]');
+      setIsLoading(true);
       
-      const allTasks = [...tasks, ...reminders, ...sharedTasks];
-      const completedTasks = allTasks.filter(task => task.completed || task.status === 'completed').length;
-      const totalTasks = allTasks.length;
-      
-      // Generate empty weekly data
-      const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-      const weeklyData = weekDays.map(day => ({
-        day,
-        completed: 0,
-        created: 0
-      }));
+      // Simulate loading delay
+      setTimeout(() => {
+        const completedTasks = tasks.filter(task => task.completed).length;
+        const totalTasks = tasks.length;
+        
+        // Generate weekly data based on actual tasks
+        const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const weeklyData = weekDays.map(day => {
+          const dayTasks = tasks.filter(task => {
+            if (!task.dueDate) return false;
+            const taskDate = new Date(task.dueDate);
+            const dayIndex = weekDays.indexOf(day);
+            return taskDate.getDay() === (dayIndex + 1) % 7;
+          });
+          
+          return {
+            day,
+            completed: dayTasks.filter(task => task.completed).length,
+            created: dayTasks.length
+          };
+        });
 
-      // Generate empty category data
-      const categories = ['Work', 'Personal', 'Health', 'Learning', 'Social'];
-      const categoryData = categories.map((name, index) => ({
-        name,
-        value: 0,
-        color: `hsl(${index * 72}, 70%, 50%)`
-      }));
+        // Generate category data based on task priorities
+        const categories = [
+          { name: t('work'), priority: 'high', color: 'hsl(0, 70%, 50%)' },
+          { name: t('personal'), priority: 'medium', color: 'hsl(72, 70%, 50%)' },
+          { name: t('health'), priority: 'low', color: 'hsl(144, 70%, 50%)' },
+          { name: t('learning'), priority: 'medium', color: 'hsl(216, 70%, 50%)' },
+          { name: t('social'), priority: 'low', color: 'hsl(288, 70%, 50%)' }
+        ];
+        
+        const categoryData = categories.map(category => ({
+          name: category.name,
+          value: tasks.filter(task => task.priority === category.priority).length,
+          color: category.color
+        }));
 
-      // Calculate productivity score (0 since no data)
-      const productivityScore = 0;
+        // Calculate productivity score
+        const productivityScore = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-      // Generate suggestions for getting started
-      const suggestions = [
-        "Start by creating your first task to begin tracking your productivity",
-        "Set up reminders to stay on top of important deadlines",
-        "Use the sharing feature to collaborate with your team",
-        "Complete a few tasks to see your analytics come to life"
-      ];
+        // Generate suggestions based on data
+        const suggestions = [
+          totalTasks === 0 ? "Start by creating your first task to begin tracking your productivity" : null,
+          completedTasks === 0 && totalTasks > 0 ? "Try completing a few tasks to see your progress" : null,
+          productivityScore > 80 ? "Great job! You're maintaining excellent productivity" : null,
+          productivityScore < 50 && totalTasks > 0 ? "Consider breaking down large tasks into smaller, manageable pieces" : null,
+          "Set up reminders to stay on top of important deadlines",
+          "Use the sharing feature to collaborate with your team"
+        ].filter(Boolean) as string[];
 
-      setAnalyticsData({
-        completedTasks,
-        totalTasks,
-        currentStreak: 0,
-        longestStreak: 0,
-        weeklyData,
-        categoryData,
-        productivityScore,
-        suggestions
-      });
+        setAnalyticsData({
+          completedTasks,
+          totalTasks,
+          currentStreak: 0, // TODO: Implement streak calculation
+          longestStreak: 0,
+          weeklyData,
+          categoryData,
+          productivityScore,
+          suggestions: suggestions.slice(0, 4)
+        });
+        
+        setIsLoading(false);
+      }, 1000);
     };
 
     generateAnalytics();
-  }, []);
+  }, [tasks, t]);
 
-  const completionRate = 0;
+  const completionRate = analyticsData.totalTasks > 0 
+    ? Math.round((analyticsData.completedTasks / analyticsData.totalTasks) * 100) 
+    : 0;
 
   const chartConfig = {
     completed: {
-      label: "Completed",
+      label: t('completed'),
       color: "hsl(var(--primary))",
     },
     created: {
-      label: "Created", 
+      label: t('created'),
       color: "hsl(var(--muted-foreground))",
     },
   };
 
   const categoryChartConfig = {
-    Work: {
-      label: "Work",
+    [t('work')]: {
+      label: t('work'),
       color: "hsl(0, 70%, 50%)",
     },
-    Personal: {
-      label: "Personal", 
+    [t('personal')]: {
+      label: t('personal'),
       color: "hsl(72, 70%, 50%)",
     },
-    Health: {
-      label: "Health",
+    [t('health')]: {
+      label: t('health'),
       color: "hsl(144, 70%, 50%)",
     },
-    Learning: {
-      label: "Learning",
+    [t('learning')]: {
+      label: t('learning'),
       color: "hsl(216, 70%, 50%)",
     },
-    Social: {
-      label: "Social",
+    [t('social')]: {
+      label: t('social'),
       color: "hsl(288, 70%, 50%)",
     },
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+          <div className="text-center">
+            <LoadingSpinner size="lg" className="mb-4" />
+            <p className="text-muted-foreground">Loading analytics...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -142,14 +181,14 @@ const Analytics = () => {
             <div>
               <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
                 <BarChart3 className="h-8 w-8 text-primary" />
-                Analytics & Insights
+                {t('analyticsInsights')}
               </h1>
               <p className="text-muted-foreground mt-2">
-                Track your productivity and get personalized suggestions
+                {t('trackProductivity')}
               </p>
             </div>
             <Badge variant="secondary" className="text-sm px-3 py-1">
-              Last updated: {new Date().toLocaleDateString()}
+              {t('lastUpdated')}: {new Date().toLocaleDateString()}
             </Badge>
           </div>
 
@@ -159,12 +198,12 @@ const Analytics = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <Target className="h-4 w-4" />
-                  Completion Rate
+                  {t('completionRate')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-primary">0%</div>
-                <Progress value={0} className="mt-2" />
+                <div className="text-2xl font-bold text-primary">{completionRate}%</div>
+                <Progress value={completionRate} className="mt-2" />
               </CardContent>
             </Card>
 
@@ -172,12 +211,12 @@ const Analytics = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <Award className="h-4 w-4" />
-                  Productivity Score
+                  {t('productivityScore')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-accent">0</div>
-                <Progress value={0} className="mt-2" />
+                <div className="text-2xl font-bold text-accent">{analyticsData.productivityScore}</div>
+                <Progress value={analyticsData.productivityScore} className="mt-2" />
               </CardContent>
             </Card>
 
@@ -185,12 +224,12 @@ const Analytics = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <Zap className="h-4 w-4" />
-                  Current Streak
+                  {t('currentStreak')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-secondary">0 days</div>
-                <p className="text-xs text-muted-foreground mt-1">Longest: 0 days</p>
+                <div className="text-2xl font-bold text-secondary">{analyticsData.currentStreak} {t('days')}</div>
+                <p className="text-xs text-muted-foreground mt-1">{t('longestStreak')}: {analyticsData.longestStreak} {t('days')}</p>
               </CardContent>
             </Card>
 
@@ -198,12 +237,12 @@ const Analytics = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <Clock className="h-4 w-4" />
-                  Tasks Completed
+                  {t('tasksCompleted')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-primary">{analyticsData.completedTasks}</div>
-                <p className="text-xs text-muted-foreground mt-1">of {analyticsData.totalTasks} total</p>
+                <p className="text-xs text-muted-foreground mt-1">of {analyticsData.totalTasks} {t('totalTasks')}</p>
               </CardContent>
             </Card>
           </div>
@@ -215,18 +254,17 @@ const Analytics = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calendar className="h-5 w-5" />
-                  Weekly Activity
+                  {t('weeklyActivity')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {analyticsData.weeklyData.length === 0 || analyticsData.weeklyData.every(d => d.completed === 0 && d.created === 0) ? (
-                  <div className="h-[300px] flex items-center justify-center text-center">
-                    <div>
-                      <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">No activity data yet</p>
-                      <p className="text-sm text-muted-foreground">Start creating and completing tasks to see your weekly progress</p>
-                    </div>
-                  </div>
+                  <EmptyState
+                    icon={BarChart3}
+                    title={t('noActivityData')}
+                    description={t('startCreatingTasks')}
+                    className="h-[300px]"
+                  />
                 ) : (
                   <ChartContainer config={chartConfig} className="h-[300px]">
                     <BarChart data={analyticsData.weeklyData}>
@@ -247,18 +285,17 @@ const Analytics = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
-                  Task Categories
+                  {t('taskCategories')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {analyticsData.categoryData.length === 0 || analyticsData.categoryData.every(c => c.value === 0) ? (
-                  <div className="h-[300px] flex items-center justify-center text-center">
-                    <div>
-                      <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">No category data yet</p>
-                      <p className="text-sm text-muted-foreground">Create tasks in different categories to see the distribution</p>
-                    </div>
-                  </div>
+                  <EmptyState
+                    icon={TrendingUp}
+                    title={t('noCategoryData')}
+                    description={t('createTasksCategories')}
+                    className="h-[300px]"
+                  />
                 ) : (
                   <>
                     <ChartContainer config={categoryChartConfig} className="h-[300px]">
@@ -301,7 +338,7 @@ const Analytics = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Brain className="h-5 w-5" />
-                Getting Started Tips
+                {t('gettingStartedTips')}
               </CardTitle>
             </CardHeader>
             <CardContent>

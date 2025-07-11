@@ -1,333 +1,185 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Plus, Calendar, Clock, User } from 'lucide-react';
+
+import React, { useState, useMemo } from 'react';
+import { Plus, Calendar, Filter, Search, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Navbar from '@/components/Navbar';
-import { useCommonTranslation } from '@/hooks/useTranslation';
+import TaskModal from '@/components/TaskModal';
+import TaskCard from '@/components/TaskCard';
+import SearchBar from '@/components/SearchBar';
+import TaskFilters, { TaskFilters as TaskFiltersType } from '@/components/TaskFilters';
+import TaskStats from '@/components/TaskStats';
+import TaskDragDrop from '@/components/TaskDragDrop';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import EmptyState from '@/components/EmptyState';
+import { useTaskStore } from '@/stores/useTaskStore';
+import { useTaskFilters } from '@/hooks/useTaskFilters';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useCommonTranslation } from '@/hooks/useCommonTranslation';
 
-interface Task {
-  id: number;
-  title: string;
-  description: string;
-  dueDate: string;
-  dueTime: string;
-  priority: 'low' | 'medium' | 'high';
-  source: string;
-  status: 'pending' | 'completed';
-  urgency: 'normal' | 'urgent';
-}
-
-const Timeline: React.FC = () => {
-  const location = useLocation();
+const Timeline = () => {
+  const { t: tLang } = useLanguage();
   const { t } = useCommonTranslation();
-  const [isDialogOpen, setIsDialogOpen] = useState(location.state?.openAddTask || false);
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const { tasks, updateTaskOrder } = useTaskStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'drag' | 'stats'>('list');
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Load tasks from localStorage on component mount
-  useEffect(() => {
-    const savedTasks = localStorage.getItem('memomate-tasks');
-    if (savedTasks) {
-      try {
-        setTasks(JSON.parse(savedTasks));
-      } catch (error) {
-        console.error('Error loading tasks:', error);
-      }
-    }
-  }, []);
-
-  // Save tasks to localStorage whenever tasks change
-  useEffect(() => {
-    localStorage.setItem('memomate-tasks', JSON.stringify(tasks));
-  }, [tasks]);
-
-  const [newTask, setNewTask] = useState<Partial<Task>>({
-    title: '',
-    description: '',
-    dueDate: '',
-    dueTime: '',
-    priority: 'medium',
-    source: 'manual',
-    status: 'pending',
-    urgency: 'normal'
+  const { filters, setFilters, filteredTasks } = useTaskFilters({ 
+    tasks, 
+    searchQuery 
   });
 
-  const handleAddTask = () => {
-    if (newTask.title && newTask.dueDate && newTask.dueTime) {
-      const task: Task = {
-        id: Date.now(),
-        title: newTask.title!,
-        description: newTask.description || '',
-        dueDate: newTask.dueDate!,
-        dueTime: newTask.dueTime!,
-        priority: newTask.priority as 'low' | 'medium' | 'high',
-        source: newTask.source!,
-        status: 'pending',
-        urgency: newTask.urgency as 'normal' | 'urgent'
-      };
+  const sortedTasks = useMemo(() => {
+    return [...filteredTasks].sort((a, b) => {
+      // Sort by due date first, then by priority
+      if (a.dueDate && b.dueDate) {
+        const dateA = new Date(a.dueDate);
+        const dateB = new Date(b.dueDate);
+        if (dateA.getTime() !== dateB.getTime()) {
+          return dateA.getTime() - dateB.getTime();
+        }
+      }
       
-      setTasks([...tasks, task]);
-      setNewTask({
-        title: '',
-        description: '',
-        dueDate: '',
-        dueTime: '',
-        priority: 'medium',
-        source: 'manual',
-        status: 'pending',
-        urgency: 'normal'
-      });
-      setIsDialogOpen(false);
-    }
-  };
+      // Priority order: high, medium, low
+      const priorityOrder = { 'high': 3, 'medium': 2, 'low': 1 };
+      return priorityOrder[b.priority] - priorityOrder[a.priority];
+    });
+  }, [filteredTasks]);
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'border-l-red-500 bg-red-50 dark:bg-red-900/20';
-      case 'medium': return 'border-l-yellow-500 bg-yellow-50 dark:bg-yellow-900/20';
-      case 'low': return 'border-l-green-500 bg-green-50 dark:bg-green-900/20';
-      default: return 'border-l-gray-500 bg-gray-50 dark:bg-gray-900/20';
-    }
-  };
-
-  const getSourceIcon = (source: string) => {
-    switch (source) {
-      case 'gmail': return '📧';
-      case 'whatsapp': return '💬';
-      case 'calendar': return '📅';
-      case 'sms': return '📱';
-      default: return '📝';
-    }
-  };
-
-  const getTranslatedText = (key: string) => {
-    // Helper function to safely translate known keys
-    const knownKeys = ['low', 'medium', 'high', 'normal', 'urgent', 'manual', 'gmail', 'whatsapp', 'calendar', 'sms', 'pending', 'completed'];
-    if (knownKeys.includes(key)) {
-      return t(key as any);
-    }
-    return key; // Return the original string if not a known translation key
+  const handleTasksReorder = (reorderedTasks: any[]) => {
+    updateTaskOrder(reorderedTasks);
   };
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-muted/20 animate-gradient" />
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-16 left-16 w-36 h-36 bg-primary/20 rounded-full animate-pulse" />
-        <div className="absolute top-48 right-24 w-28 h-28 bg-accent/20 rounded-full animate-bounce" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-24 left-1/4 w-44 h-44 bg-primary/10 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
-        <div className="absolute bottom-48 right-1/3 w-32 h-32 bg-accent/15 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }} />
-      </div>
-
+    <div className="min-h-screen bg-background">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-8 max-w-4xl relative z-10">
-        <div className="flex justify-between items-center mb-8 animate-fade-in">
+      <div className="container mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold mb-2 text-foreground">{t('timeline')}</h1>
-            <p className="text-muted-foreground">{t('manageYourTasks')}</p>
+            <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+              <Calendar className="h-8 w-8 text-primary" />
+              {tLang('timeline')}
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              {tLang('manageYourTasks')}
+            </p>
           </div>
           
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-2 transform transition-all duration-150 hover:scale-105 active:scale-95">
-                <Plus className="w-4 h-4" />
-                {t('addTask')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md bg-background border-border">
-              <DialogHeader>
-                <DialogTitle className="text-foreground">{t('addTask')}</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="title" className="text-foreground">{t('taskTitle')}</Label>
-                  <Input
-                    id="title"
-                    value={newTask.title}
-                    onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                    placeholder={t('enterTaskTitle')}
-                    className="bg-background text-foreground border-border"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="description" className="text-foreground">{t('description')}</Label>
-                  <Textarea
-                    id="description"
-                    value={newTask.description}
-                    onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                    placeholder={t('enterDescription')}
-                    className="bg-background text-foreground border-border"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="dueDate" className="text-foreground">{t('dueDate')}</Label>
-                    <Input
-                      id="dueDate"
-                      type="date"
-                      value={newTask.dueDate}
-                      onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-                      className="bg-background text-foreground border-border"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="dueTime" className="text-foreground">{t('dueTime')}</Label>
-                    <Input
-                      id="dueTime"
-                      type="time"
-                      value={newTask.dueTime}
-                      onChange={(e) => setNewTask({ ...newTask, dueTime: e.target.value })}
-                      className="bg-background text-foreground border-border"
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="priority" className="text-foreground">{t('priority')}</Label>
-                    <Select value={newTask.priority} onValueChange={(value) => setNewTask({ ...newTask, priority: value as 'low' | 'medium' | 'high' })}>
-                      <SelectTrigger className="bg-background text-foreground border-border">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-background border-border">
-                        <SelectItem value="low">{t('low')}</SelectItem>
-                        <SelectItem value="medium">{t('medium')}</SelectItem>
-                        <SelectItem value="high">{t('high')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="urgency" className="text-foreground">{t('urgency')}</Label>
-                    <Select value={newTask.urgency} onValueChange={(value) => setNewTask({ ...newTask, urgency: value as 'normal' | 'urgent' })}>
-                      <SelectTrigger className="bg-background text-foreground border-border">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-background border-border">
-                        <SelectItem value="normal">{t('normal')}</SelectItem>
-                        <SelectItem value="urgent">{t('urgent')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="source" className="text-foreground">{t('source')}</Label>
-                  <Select value={newTask.source} onValueChange={(value) => setNewTask({ ...newTask, source: value })}>
-                    <SelectTrigger className="bg-background text-foreground border-border">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border-border">
-                      <SelectItem value="manual">{t('manual')}</SelectItem>
-                      <SelectItem value="gmail">{t('gmail')}</SelectItem>
-                      <SelectItem value="whatsapp">{t('whatsapp')}</SelectItem>
-                      <SelectItem value="calendar">{t('calendar')}</SelectItem>
-                      <SelectItem value="sms">{t('sms')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="flex gap-3 pt-4">
-                  <Button 
-                    onClick={handleAddTask} 
-                    className="flex-1 transform transition-all duration-150 hover:scale-105 active:scale-95"
-                  >
-                    {t('addTask')}
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setIsDialogOpen(false)}
-                    className="transform transition-all duration-150 hover:scale-105 active:scale-95"
-                  >
-                    {t('cancel')}
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <div className="flex items-center gap-2">
+            <Button
+              variant={viewMode === 'stats' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('stats')}
+            >
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Stats
+            </Button>
+            <Button
+              variant={viewMode === 'drag' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('drag')}
+            >
+              Drag & Drop
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('list')}
+            >
+              List
+            </Button>
+            <Button onClick={() => setIsModalOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              {t('addNewTask')}
+            </Button>
+          </div>
         </div>
 
-        <div className="space-y-4">
-          {tasks.length === 0 ? (
-            <Card className="p-8 text-center animate-fade-in">
-              <div className="flex flex-col items-center gap-4">
-                <Calendar className="w-16 h-16 text-muted-foreground" />
-                <h3 className="text-xl font-semibold text-foreground">{t('noTasks')}</h3>
-                <p className="text-muted-foreground">{t('addFirstTask')}</p>
-                <Button onClick={() => setIsDialogOpen(true)} className="gap-2">
-                  <Plus className="w-4 h-4" />
-                  {t('addTask')}
-                </Button>
-              </div>
-            </Card>
-          ) : (
-            tasks.map((task, index) => (
-              <Card key={task.id} className={`border-l-4 ${getPriorityColor(task.priority)} animate-slide-in bg-card/95 backdrop-blur border-border`} style={{ animationDelay: `${index * 0.1}s` }}>
-                <CardContent className="p-6">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg text-foreground mb-1">{task.title}</h3>
-                      {task.description && (
-                        <p className="text-muted-foreground text-sm mb-3 leading-relaxed">{task.description}</p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 ml-4">
-                      <span className="text-lg">{getSourceIcon(task.source)}</span>
-                      {task.urgency === 'urgent' && (
-                        <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                          {t('urgent')}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-4 text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
-                        <span>{new Date(task.dueDate).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        <span>{task.dueTime}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <User className="w-4 h-4" />
-                        <span className="capitalize">{getTranslatedText(task.source)}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-300' :
-                        task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300' :
-                        'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300'
-                      }`}>
-                        {getTranslatedText(task.priority)}
-                      </span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        task.status === 'completed' 
-                          ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300' 
-                          : 'bg-gray-100 text-gray-700 dark:bg-gray-900/20 dark:text-gray-300'
-                      }`}>
-                        {getTranslatedText(task.status)}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
+        {/* Stats View */}
+        {viewMode === 'stats' && (
+          <div className="mb-6">
+            <TaskStats tasks={tasks} />
+          </div>
+        )}
+
+        {/* Search and Filters */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="flex-1">
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search tasks..."
+            />
+          </div>
+          <TaskFilters
+            filters={filters}
+            onFiltersChange={setFilters}
+          />
         </div>
+
+        {/* Tasks Content */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>
+                {filteredTasks.length === tasks.length 
+                  ? `All Tasks (${tasks.length})`
+                  : `Filtered Tasks (${filteredTasks.length} of ${tasks.length})`
+                }
+              </span>
+              {isLoading && <LoadingSpinner size="sm" />}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {sortedTasks.length === 0 ? (
+              searchQuery || filters.status !== 'all' || filters.priority !== 'all' || filters.urgency !== 'all' ? (
+                <EmptyState
+                  icon={Search}
+                  title="No tasks found"
+                  description="Try adjusting your search or filters to find tasks."
+                  actionLabel="Clear Filters"
+                  onAction={() => {
+                    setSearchQuery('');
+                    setFilters({ status: 'all', priority: 'all', urgency: 'all' });
+                  }}
+                />
+              ) : (
+                <EmptyState
+                  icon={Calendar}
+                  title={t('noTasks')}
+                  description="Get started by creating your first task!"
+                  actionLabel={t('addNewTask')}
+                  onAction={() => setIsModalOpen(true)}
+                />
+              )
+            ) : (
+              <div className="space-y-4">
+                {viewMode === 'drag' ? (
+                  <TaskDragDrop
+                    tasks={sortedTasks}
+                    onTasksReorder={handleTasksReorder}
+                  />
+                ) : (
+                  <div className="grid gap-4">
+                    {sortedTasks.map(task => (
+                      <TaskCard key={task.id} task={task} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
+
+      <TaskModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };

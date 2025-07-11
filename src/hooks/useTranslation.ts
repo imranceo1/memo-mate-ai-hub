@@ -1,18 +1,19 @@
-
 import { useCallback, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { landingTranslations } from '@/i18n/translations/landing';
 import { settingsTranslations } from '@/i18n/translations/settings';
 import { remindersTranslations } from '@/i18n/translations/reminders';
 import { commonTranslations } from '@/i18n/translations/common';
+import { analyticsTranslations } from '@/i18n/translations/analytics';
 
-type TranslationModule = 'landing' | 'settings' | 'reminders' | 'common';
+type TranslationModule = 'landing' | 'settings' | 'reminders' | 'common' | 'analytics';
 
 const translationModules = {
   landing: landingTranslations,
   settings: settingsTranslations,
   reminders: remindersTranslations,
   common: commonTranslations,
+  analytics: analyticsTranslations,
 };
 
 export const useTranslation = (module?: TranslationModule) => {
@@ -49,5 +50,10 @@ export const useRemindersTranslation = () => {
 
 export const useCommonTranslation = () => {
   const { t, language } = useTranslation('common');
+  return { t, language };
+};
+
+export const useAnalyticsTranslation = () => {
+  const { t, language } = useTranslation('analytics');
   return { t, language };
 };
