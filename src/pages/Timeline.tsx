@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Navbar from '@/components/Navbar';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useCommonTranslation } from '@/hooks/useTranslation';
 
 interface Task {
   id: number;
@@ -25,7 +25,7 @@ interface Task {
 
 const Timeline: React.FC = () => {
   const location = useLocation();
-  const { t } = useLanguage();
+  const { t } = useCommonTranslation();
   const [isDialogOpen, setIsDialogOpen] = useState(location.state?.openAddTask || false);
   const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -109,7 +109,7 @@ const Timeline: React.FC = () => {
     // Helper function to safely translate known keys
     const knownKeys = ['low', 'medium', 'high', 'normal', 'urgent', 'manual', 'gmail', 'whatsapp', 'calendar', 'sms', 'pending', 'completed'];
     if (knownKeys.includes(key)) {
-      return t(key as keyof typeof t);
+      return t(key as any);
     }
     return key; // Return the original string if not a known translation key
   };
