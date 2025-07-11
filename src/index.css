@@ -199,9 +199,9 @@
   }
 }
 
-/* Main content margin adjustment based on sidebar state */
+/* Ensure proper layout adjustments for collapsed sidebar */
 @media (min-width: 1024px) {
-  .main-content {
+  .lg\\:ml-64 {
     margin-left: var(--sidebar-width);
     transition: margin-left 0.3s ease-in-out;
   }

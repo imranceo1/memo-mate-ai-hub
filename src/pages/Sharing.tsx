@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Plus, Users, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -86,7 +87,7 @@ const Sharing = () => {
       </div>
 
       <div className="lg:ml-64 p-6">
-        <div className="max-w-7xl mx-auto space-y-6">
+        <div className="max-w-6xl mx-auto space-y-6">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
