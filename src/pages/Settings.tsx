@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Settings as SettingsIcon, Shield, Bell, Trash2, Mail, Calendar, MessageCircle, Smartphone, Video } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -38,7 +37,7 @@ const Settings: React.FC = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <div className="lg:ml-64 p-6">
+      <div className="p-6">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8 animate-fade-in">
             <h1 className="text-3xl font-bold mb-2 flex items-center gap-2 break-words">

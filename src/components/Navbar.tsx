@@ -6,6 +6,7 @@ import {
   MessageSquare, 
   Bell, 
   Share2,
+  BarChart3,
   Settings, 
   Menu,
   X,
@@ -37,6 +38,7 @@ const Navbar = () => {
     { name: t('chat'), path: '/chat', icon: MessageSquare },
     { name: t('reminders'), path: '/reminders', icon: Bell },
     { name: t('taskSharing'), path: '/sharing', icon: Share2 },
+    { name: 'Analytics', path: '/analytics', icon: BarChart3 },
     { name: t('settings'), path: '/settings', icon: Settings },
   ];
 

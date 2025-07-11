@@ -14,6 +14,7 @@ import Chat from "./pages/Chat";
 import Timeline from "./pages/Timeline";
 import Reminders from "./pages/Reminders";
 import Sharing from "./pages/Sharing";
+import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +36,7 @@ const AppContent = () => {
           <Route path="/timeline" element={<Timeline />} />
           <Route path="/reminders" element={<Reminders />} />
           <Route path="/sharing" element={<Sharing />} />
+          <Route path="/analytics" element={<Analytics />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

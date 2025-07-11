@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Plus, Users, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -86,7 +85,7 @@ const Sharing = () => {
         <div className="absolute bottom-1/3 right-1/3 w-18 h-18 bg-primary/10 rounded-full animate-bounce opacity-45" style={{ animationDelay: '3s' }}></div>
       </div>
 
-      <div className="lg:ml-64 p-6">
+      <div className="p-6">
         <div className="max-w-6xl mx-auto space-y-6">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

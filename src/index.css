@@ -199,7 +199,7 @@
   }
 }
 
-/* Ensure proper layout adjustments for collapsed sidebar */
+/* Sidebar width management */
 @media (min-width: 1024px) {
   .lg\\:ml-64 {
     margin-left: var(--sidebar-width);
