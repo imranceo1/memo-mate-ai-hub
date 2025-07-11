@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Plus, Calendar, Clock, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,41 +27,24 @@ const Timeline: React.FC = () => {
   const location = useLocation();
   const { t } = useLanguage();
   const [isDialogOpen, setIsDialogOpen] = useState(location.state?.openAddTask || false);
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: 1,
-      title: "Review quarterly reports",
-      description: "Analyze Q3 performance metrics and prepare summary",
-      dueDate: "2024-01-15",
-      dueTime: "14:00",
-      priority: "high",
-      source: "gmail",
-      status: "pending",
-      urgency: "urgent"
-    },
-    {
-      id: 2,
-      title: "Team standup meeting",
-      description: "Weekly sync with development team",
-      dueDate: "2024-01-15",
-      dueTime: "15:30",
-      priority: "medium",
-      source: "calendar",
-      status: "pending",
-      urgency: "normal"
-    },
-    {
-      id: 3,
-      title: "Update project documentation",
-      description: "Add new API endpoints to documentation",
-      dueDate: "2024-01-15",
-      dueTime: "17:00",
-      priority: "low",
-      source: "manual",
-      status: "completed",
-      urgency: "normal"
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  // Load tasks from localStorage on component mount
+  useEffect(() => {
+    const savedTasks = localStorage.getItem('memomate-tasks');
+    if (savedTasks) {
+      try {
+        setTasks(JSON.parse(savedTasks));
+      } catch (error) {
+        console.error('Error loading tasks:', error);
+      }
     }
-  ]);
+  }, []);
+
+  // Save tasks to localStorage whenever tasks change
+  useEffect(() => {
+    localStorage.setItem('memomate-tasks', JSON.stringify(tasks));
+  }, [tasks]);
 
   const [newTask, setNewTask] = useState<Partial<Task>>({
     title: '',
@@ -78,7 +60,7 @@ const Timeline: React.FC = () => {
   const handleAddTask = () => {
     if (newTask.title && newTask.dueDate && newTask.dueTime) {
       const task: Task = {
-        id: tasks.length + 1,
+        id: Date.now(),
         title: newTask.title!,
         description: newTask.description || '',
         dueDate: newTask.dueDate!,
@@ -274,62 +256,76 @@ const Timeline: React.FC = () => {
         </div>
 
         <div className="space-y-4">
-          {tasks.map((task, index) => (
-            <Card key={task.id} className={`border-l-4 ${getPriorityColor(task.priority)} animate-slide-in bg-card/95 backdrop-blur border-border`} style={{ animationDelay: `${index * 0.1}s` }}>
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg text-foreground mb-1">{task.title}</h3>
-                    {task.description && (
-                      <p className="text-muted-foreground text-sm mb-3 leading-relaxed">{task.description}</p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <span className="text-lg">{getSourceIcon(task.source)}</span>
-                    {task.urgency === 'urgent' && (
-                      <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                        {t('urgent')}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-4 text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>{new Date(task.dueDate).toLocaleDateString()}</span>
+          {tasks.length === 0 ? (
+            <Card className="p-8 text-center animate-fade-in">
+              <div className="flex flex-col items-center gap-4">
+                <Calendar className="w-16 h-16 text-muted-foreground" />
+                <h3 className="text-xl font-semibold text-foreground">{t('noTasks')}</h3>
+                <p className="text-muted-foreground">{t('addFirstTask')}</p>
+                <Button onClick={() => setIsDialogOpen(true)} className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  {t('addTask')}
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            tasks.map((task, index) => (
+              <Card key={task.id} className={`border-l-4 ${getPriorityColor(task.priority)} animate-slide-in bg-card/95 backdrop-blur border-border`} style={{ animationDelay: `${index * 0.1}s` }}>
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-lg text-foreground mb-1">{task.title}</h3>
+                      {task.description && (
+                        <p className="text-muted-foreground text-sm mb-3 leading-relaxed">{task.description}</p>
+                      )}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{task.dueTime}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <User className="w-4 h-4" />
-                      <span className="capitalize">{getTranslatedText(task.source)}</span>
+                    <div className="flex items-center gap-2 ml-4">
+                      <span className="text-lg">{getSourceIcon(task.source)}</span>
+                      {task.urgency === 'urgent' && (
+                        <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                          {t('urgent')}
+                        </span>
+                      )}
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-300' :
-                      task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300' :
-                      'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300'
-                    }`}>
-                      {getTranslatedText(task.priority)}
-                    </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      task.status === 'completed' 
-                        ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300' 
-                        : 'bg-gray-100 text-gray-700 dark:bg-gray-900/20 dark:text-gray-300'
-                    }`}>
-                      {getTranslatedText(task.status)}
-                    </span>
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-4 text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        <span>{new Date(task.dueDate).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        <span>{task.dueTime}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <User className="w-4 h-4" />
+                        <span className="capitalize">{getTranslatedText(task.source)}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-300' :
+                        task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300' :
+                        'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300'
+                      }`}>
+                        {getTranslatedText(task.priority)}
+                      </span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        task.status === 'completed' 
+                          ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300' 
+                          : 'bg-gray-100 text-gray-700 dark:bg-gray-900/20 dark:text-gray-300'
+                      }`}>
+                        {getTranslatedText(task.status)}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
       </div>
     </div>

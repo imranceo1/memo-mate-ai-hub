@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Plus, Users, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -31,51 +30,22 @@ const Sharing = () => {
   const [sharedTasks, setSharedTasks] = useState<SharedTask[]>([]);
   const [activeTab, setActiveTab] = useState<'shared' | 'received'>('shared');
 
-  // Mock data for demonstration
+  // Load shared tasks from localStorage on component mount
   useEffect(() => {
-    const mockTasks: SharedTask[] = [
-      {
-        id: '1',
-        title: 'Review Project Proposal',
-        description: 'Please review the Q2 project proposal and provide feedback',
-        assignedTo: 'john@example.com',
-        assignedBy: 'me',
-        role: 'editor',
-        status: 'accepted',
-        priority: 'high',
-        dueDate: '2024-07-08',
-        dueTime: '14:00',
-        createdAt: '2024-07-06T10:00:00Z'
-      },
-      {
-        id: '2',
-        title: 'Complete Market Research',
-        description: 'Gather data on competitor analysis',
-        assignedTo: 'sarah@example.com',
-        assignedBy: 'me',
-        role: 'admin',
-        status: 'pending',
-        priority: 'medium',
-        dueDate: '2024-07-10',
-        dueTime: '16:30',
-        createdAt: '2024-07-06T11:00:00Z'
-      },
-      {
-        id: '3',
-        title: 'Team Meeting Preparation',
-        description: 'Prepare agenda for the weekly team meeting',
-        assignedTo: 'me',
-        assignedBy: 'manager@example.com',
-        role: 'viewer',
-        status: 'accepted',
-        priority: 'low',
-        dueDate: '2024-07-07',
-        dueTime: '09:00',
-        createdAt: '2024-07-05T15:00:00Z'
+    const savedSharedTasks = localStorage.getItem('memomate-shared-tasks');
+    if (savedSharedTasks) {
+      try {
+        setSharedTasks(JSON.parse(savedSharedTasks));
+      } catch (error) {
+        console.error('Error loading shared tasks:', error);
       }
-    ];
-    setSharedTasks(mockTasks);
+    }
   }, []);
+
+  // Save shared tasks to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('memomate-shared-tasks', JSON.stringify(sharedTasks));
+  }, [sharedTasks]);
 
   const sharedByMe = sharedTasks.filter(task => task.assignedBy === 'me');
   const receivedByMe = sharedTasks.filter(task => task.assignedBy !== 'me');

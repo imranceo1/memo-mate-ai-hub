@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bell, Clock, Mail, Smartphone, Calendar, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +6,14 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import Navbar from '@/components/Navbar';
 import { useRemindersTranslation } from '@/hooks/useTranslation';
+
+interface Reminder {
+  id: number;
+  title: string;
+  time: string;
+  type: 'high' | 'medium' | 'low';
+  category: string;
+}
 
 const Reminders: React.FC = () => {
   const { t } = useRemindersTranslation();
@@ -16,41 +23,46 @@ const Reminders: React.FC = () => {
     pushNotifications: true,
   });
 
-  const upcomingReminders = [
-    { 
-      id: 1, 
-      title: "Review quarterly reports", 
-      time: "1 hour", 
-      type: "high", 
-      category: t('dueToday') 
-    },
-    { 
-      id: 2, 
-      title: "Team standup meeting", 
-      time: "3 hours", 
-      type: "medium", 
-      category: t('dueToday') 
-    },
-    { 
-      id: 3, 
-      title: "Project planning session", 
-      time: "Tomorrow 9:00 AM", 
-      type: "high", 
-      category: t('dueTomorrow') 
-    },
-    { 
-      id: 4, 
-      title: "Client presentation prep", 
-      time: "Tomorrow 2:00 PM", 
-      type: "medium", 
-      category: t('dueTomorrow') 
-    },
-  ];
+  const [upcomingReminders, setUpcomingReminders] = useState<Reminder[]>([]);
+
+  // Load reminders from localStorage on component mount
+  useEffect(() => {
+    const savedReminders = localStorage.getItem('memomate-reminders');
+    if (savedReminders) {
+      try {
+        setUpcomingReminders(JSON.parse(savedReminders));
+      } catch (error) {
+        console.error('Error loading reminders:', error);
+      }
+    }
+  }, []);
+
+  // Save reminders to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('memomate-reminders', JSON.stringify(upcomingReminders));
+  }, [upcomingReminders]);
+
+  // Load notification settings from localStorage
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('memomate-notification-settings');
+    if (savedSettings) {
+      try {
+        setNotifications(JSON.parse(savedSettings));
+      } catch (error) {
+        console.error('Error loading notification settings:', error);
+      }
+    }
+  }, []);
+
+  // Save notification settings to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('memomate-notification-settings', JSON.stringify(notifications));
+  }, [notifications]);
 
   const streakData = {
-    current: 15,
-    best: 28,
-    thisWeek: 7
+    current: 0,
+    best: 0,
+    thisWeek: 0
   };
 
   const handleToggle = (setting: keyof typeof notifications) => {
@@ -148,25 +160,32 @@ const Reminders: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {upcomingReminders.map((reminder) => (
-                <div key={reminder.id} className="p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors border border-border/50">
-                  <div className="flex items-start justify-between mb-2 gap-2">
-                    <h4 className="font-medium text-foreground text-sm leading-relaxed break-words flex-1">{reminder.title}</h4>
-                    <div className={`w-2 h-2 rounded-full mt-1 flex-shrink-0 ${
-                      reminder.type === 'high' ? 'bg-red-500' : 'bg-yellow-500'
-                    }`} />
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground gap-2">
-                    <span className="flex items-center gap-1 break-words">
-                      <Calendar className="w-3 h-3 flex-shrink-0" />
-                      <span className="break-words">{reminder.time}</span>
-                    </span>
-                    <span className="bg-primary/10 text-primary px-2 py-1 rounded-full flex-shrink-0 break-words">
-                      {reminder.category}
-                    </span>
-                  </div>
+              {upcomingReminders.length === 0 ? (
+                <div className="text-center py-8">
+                  <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">{t('noUpcomingReminders')}</p>
                 </div>
-              ))}
+              ) : (
+                upcomingReminders.map((reminder) => (
+                  <div key={reminder.id} className="p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors border border-border/50">
+                    <div className="flex items-start justify-between mb-2 gap-2">
+                      <h4 className="font-medium text-foreground text-sm leading-relaxed break-words flex-1">{reminder.title}</h4>
+                      <div className={`w-2 h-2 rounded-full mt-1 flex-shrink-0 ${
+                        reminder.type === 'high' ? 'bg-red-500' : 'bg-yellow-500'
+                      }`} />
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground gap-2">
+                      <span className="flex items-center gap-1 break-words">
+                        <Calendar className="w-3 h-3 flex-shrink-0" />
+                        <span className="break-words">{reminder.time}</span>
+                      </span>
+                      <span className="bg-primary/10 text-primary px-2 py-1 rounded-full flex-shrink-0 break-words">
+                        {reminder.category}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
             </CardContent>
           </Card>
 
