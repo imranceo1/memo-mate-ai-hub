@@ -1,16 +1,113 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Bell, BarChart3, Calendar, Sparkles, TrendingUp, Target, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Navbar from '@/components/Navbar';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useCommonTranslation } from '@/hooks/useTranslation';
+
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  dueTime: string;
+  priority: 'low' | 'medium' | 'high';
+  urgency: 'normal' | 'urgent';
+  source: 'manual' | 'gmail' | 'whatsapp' | 'calendar' | 'sms';
+  status: 'pending' | 'completed';
+  createdAt: string;
+}
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { t } = useLanguage();
-  const [showAddTaskDialog, setShowAddTaskDialog] = useState(false);
+  const { t } = useCommonTranslation();
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  // Load tasks from localStorage
+  useEffect(() => {
+    const savedTasks = localStorage.getItem('memomate_tasks');
+    if (savedTasks) {
+      try {
+        const parsedTasks = JSON.parse(savedTasks);
+        setTasks(parsedTasks);
+      } catch (error) {
+        console.error('Error loading tasks:', error);
+      }
+    }
+  }, []);
+
+  // Get upcoming tasks (next 4 pending tasks with due dates)
+  const getUpcomingTasks = () => {
+    const now = new Date();
+    const pendingTasks = tasks
+      .filter(task => task.status === 'pending' && task.dueDate)
+      .sort((a, b) => {
+        const dateA = new Date(`${a.dueDate}T${a.dueTime || '00:00'}`);
+        const dateB = new Date(`${b.dueDate}T${b.dueTime || '00:00'}`);
+        return dateA.getTime() - dateB.getTime();
+      })
+      .slice(0, 4);
+
+    return pendingTasks.map(task => {
+      const taskDate = new Date(`${task.dueDate}T${task.dueTime || '00:00'}`);
+      const isToday = taskDate.toDateString() === now.toDateString();
+      const isTomorrow = taskDate.toDateString() === new Date(now.getTime() + 24 * 60 * 60 * 1000).toDateString();
+      
+      let timeDisplay = '';
+      if (isToday) {
+        timeDisplay = task.dueTime || 'Today';
+      } else if (isTomorrow) {
+        timeDisplay = `Tomorrow ${task.dueTime || ''}`.trim();
+      } else {
+        timeDisplay = taskDate.toLocaleDateString();
+      }
+
+      return {
+        title: task.title,
+        time: timeDisplay,
+        priority: task.priority
+      };
+    });
+  };
+
+  const upcomingTasks = getUpcomingTasks();
+
+  // Calculate stats based on real data
+  const completedTasks = tasks.filter(task => task.status === 'completed').length;
+  const pendingTasks = tasks.filter(task => task.status === 'pending').length;
+  
+  // Calculate productivity score (completed tasks percentage)
+  const totalTasks = tasks.length;
+  const productivityScore = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  // Calculate streak (consecutive days with completed tasks)
+  const calculateStreak = () => {
+    const today = new Date();
+    let streak = 0;
+    let currentDate = new Date(today);
+    
+    while (true) {
+      const dateStr = currentDate.toISOString().split('T')[0];
+      const hasCompletedTasksOnDate = tasks.some(task => 
+        task.status === 'completed' && 
+        task.createdAt && 
+        task.createdAt.startsWith(dateStr)
+      );
+      
+      if (hasCompletedTasksOnDate) {
+        streak++;
+        currentDate.setDate(currentDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+    
+    return streak;
+  };
+
+  const streakDays = calculateStreak();
 
   const handleQuickAction = (action: string) => {
     switch (action) {
@@ -21,7 +118,6 @@ const Dashboard: React.FC = () => {
         navigate('/reminders');
         break;
       case 'viewAnalytics':
-        // For now, scroll to analytics section on dashboard
         document.getElementById('analytics-section')?.scrollIntoView({ behavior: 'smooth' });
         break;
       case 'viewAllTasks':
@@ -31,17 +127,10 @@ const Dashboard: React.FC = () => {
   };
 
   const stats = [
-    { icon: Target, label: t('tasksCompleted'), value: '24', color: 'text-green-600', bgColor: 'bg-green-100' },
-    { icon: Clock, label: t('pendingTasks'), value: '8', color: 'text-orange-600', bgColor: 'bg-orange-100' },
-    { icon: TrendingUp, label: t('productivityScore'), value: '87%', color: 'text-blue-600', bgColor: 'bg-blue-100' },
-    { icon: Calendar, label: t('streakDays'), value: '15', color: 'text-purple-600', bgColor: 'bg-purple-100' },
-  ];
-
-  const upcomingTasks = [
-    { title: "Review quarterly reports", time: "2:00 PM", priority: "high" },
-    { title: "Team standup meeting", time: "3:30 PM", priority: "medium" },
-    { title: "Update project documentation", time: "5:00 PM", priority: "low" },
-    { title: "Client feedback review", time: "Tomorrow 9:00 AM", priority: "high" },
+    { icon: Target, label: t('tasksCompleted'), value: completedTasks.toString(), color: 'text-green-600', bgColor: 'bg-green-100' },
+    { icon: Clock, label: t('pendingTasks'), value: pendingTasks.toString(), color: 'text-orange-600', bgColor: 'bg-orange-100' },
+    { icon: TrendingUp, label: t('productivityScore'), value: `${productivityScore}%`, color: 'text-blue-600', bgColor: 'bg-blue-100' },
+    { icon: Calendar, label: t('streakDays'), value: streakDays.toString(), color: 'text-purple-600', bgColor: 'bg-purple-100' },
   ];
 
   const quickActions = [
@@ -94,7 +183,9 @@ const Dashboard: React.FC = () => {
         {/* Welcome Section */}
         <div className="mb-8 animate-fade-in">
           <h1 className="text-3xl font-bold mb-2 text-foreground">{t('goodMorning')}</h1>
-          <p className="text-muted-foreground">{t('tasksToday')}</p>
+          <p className="text-muted-foreground">
+            {totalTasks > 0 ? t('tasksToday') : t('noTasks')}
+          </p>
         </div>
 
         {/* Stats Grid */}
@@ -152,18 +243,27 @@ const Dashboard: React.FC = () => {
               <CardTitle className="text-card-foreground">{t('upcomingTasks')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {upcomingTasks.map((task, index) => (
-                <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
-                  <div className="flex-1">
-                    <p className="font-medium text-foreground text-sm leading-relaxed">{task.title}</p>
-                    <p className="text-xs text-muted-foreground">{task.time}</p>
-                  </div>
-                  <div className={`w-2 h-2 rounded-full ${
-                    task.priority === 'high' ? 'bg-red-500' : 
-                    task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
-                  }`} />
+              {upcomingTasks.length > 0 ? (
+                <>
+                  {upcomingTasks.map((task, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground text-sm leading-relaxed">{task.title}</p>
+                        <p className="text-xs text-muted-foreground">{task.time}</p>
+                      </div>
+                      <div className={`w-2 h-2 rounded-full ${
+                        task.priority === 'high' ? 'bg-red-500' : 
+                        task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+                      }`} />
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground mb-2">{t('noUpcomingTasks')}</p>
+                  <p className="text-sm text-muted-foreground">{t('allTasksCompleted')}</p>
                 </div>
-              ))}
+              )}
               <Button 
                 variant="outline" 
                 className="w-full mt-3 transform transition-all duration-150 hover:scale-105 active:scale-95" 

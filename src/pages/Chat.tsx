@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Navbar from '@/components/Navbar';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useCommonTranslation } from '@/hooks/useTranslation';
 
 interface Message {
   id: number;
@@ -14,8 +14,21 @@ interface Message {
   timestamp: Date;
 }
 
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  dueTime: string;
+  priority: 'low' | 'medium' | 'high';
+  urgency: 'normal' | 'urgent';
+  source: 'manual' | 'gmail' | 'whatsapp' | 'calendar' | 'sms';
+  status: 'pending' | 'completed';
+  createdAt: string;
+}
+
 const Chat: React.FC = () => {
-  const { t } = useLanguage();
+  const { t } = useCommonTranslation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -27,6 +40,20 @@ const Chat: React.FC = () => {
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  // Load tasks from localStorage
+  useEffect(() => {
+    const savedTasks = localStorage.getItem('memomate_tasks');
+    if (savedTasks) {
+      try {
+        const parsedTasks = JSON.parse(savedTasks);
+        setTasks(parsedTasks);
+      } catch (error) {
+        console.error('Error loading tasks:', error);
+      }
+    }
+  }, []);
 
   const quickQuestions = [
     t('whatTasksDueToday'),
@@ -57,7 +84,7 @@ const Chat: React.FC = () => {
     setInputMessage('');
     setIsTyping(true);
 
-    // Simulate AI response
+    // Simulate AI response with real-time data
     setTimeout(() => {
       const aiResponse: Message = {
         id: messages.length + 2,
@@ -73,8 +100,25 @@ const Chat: React.FC = () => {
   const getAIResponse = (userMessage: string): string => {
     const lowerMessage = userMessage.toLowerCase();
     
-    if (lowerMessage.includes('due today')) {
-      return t('aiResponseTasksDue');
+    // Get real-time task data
+    const completedTasks = tasks.filter(task => task.status === 'completed');
+    const pendingTasks = tasks.filter(task => task.status === 'pending');
+    const totalTasks = tasks.length;
+    
+    // Get today's tasks
+    const today = new Date().toISOString().split('T')[0];
+    const todaysTasks = pendingTasks.filter(task => task.dueDate === today);
+    
+    // Calculate productivity score
+    const productivityScore = totalTasks > 0 ? Math.round((completedTasks.length / totalTasks) * 100) : 0;
+    
+    if (lowerMessage.includes('due today') || lowerMessage.includes('today')) {
+      if (todaysTasks.length === 0) {
+        return `Based on your current tasks, you have no tasks due today. Great job staying on top of your schedule! You have ${pendingTasks.length} pending tasks total.`;
+      } else {
+        const taskTitles = todaysTasks.map(task => `"${task.title}"`).join(', ');
+        return `You have ${todaysTasks.length} task${todaysTasks.length > 1 ? 's' : ''} due today: ${taskTitles}. ${todaysTasks.some(t => t.priority === 'high') ? 'Some of these are high priority!' : ''}`;
+      }
     }
     
     if (lowerMessage.includes('reminder')) {
@@ -82,14 +126,54 @@ const Chat: React.FC = () => {
     }
     
     if (lowerMessage.includes('productivity') || lowerMessage.includes('stats')) {
-      return t('aiResponseProductivity');
+      const streakDays = calculateStreak();
+      return `Your current productivity score is ${productivityScore}%. You've completed ${completedTasks.length} out of ${totalTasks} tasks. ${streakDays > 0 ? `You have a ${streakDays}-day streak of completing tasks. Keep up the excellent work!` : 'Start building your streak by completing tasks daily!'}`;
     }
     
     if (lowerMessage.includes('data') || lowerMessage.includes('privacy')) {
       return t('aiResponseDataProtection');
     }
+
+    if (lowerMessage.includes('how many') || lowerMessage.includes('count')) {
+      return `You currently have ${totalTasks} total tasks: ${completedTasks.length} completed and ${pendingTasks.length} pending. ${pendingTasks.length > 0 ? 'Keep going to complete them all!' : 'All tasks completed - great job!'}`;
+    }
+
+    if (lowerMessage.includes('high priority') || lowerMessage.includes('urgent')) {
+      const highPriorityTasks = pendingTasks.filter(task => task.priority === 'high' || task.urgency === 'urgent');
+      if (highPriorityTasks.length === 0) {
+        return 'You have no high priority or urgent tasks at the moment. Great job managing your workload!';
+      } else {
+        const taskTitles = highPriorityTasks.map(task => `"${task.title}"`).join(', ');
+        return `You have ${highPriorityTasks.length} high priority/urgent task${highPriorityTasks.length > 1 ? 's' : ''}: ${taskTitles}. Consider tackling these first!`;
+      }
+    }
     
     return t('aiResponseDefault') + userMessage + t('aiResponseDefaultEnd');
+  };
+
+  // Calculate streak based on real data
+  const calculateStreak = (): number => {
+    const today = new Date();
+    let streak = 0;
+    let currentDate = new Date(today);
+    
+    while (true) {
+      const dateStr = currentDate.toISOString().split('T')[0];
+      const hasCompletedTasksOnDate = tasks.some(task => 
+        task.status === 'completed' && 
+        task.createdAt && 
+        task.createdAt.startsWith(dateStr)
+      );
+      
+      if (hasCompletedTasksOnDate) {
+        streak++;
+        currentDate.setDate(currentDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+    
+    return streak;
   };
 
   const handleSubmit = (e: React.FormEvent) => {

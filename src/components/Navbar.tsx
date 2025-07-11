@@ -73,7 +73,7 @@ const Navbar = () => {
               className="w-8 h-8 object-contain flex-shrink-0"
             />
             {!isCollapsed && (
-              <h1 className="text-xl font-bold text-primary break-words">MemoMate</h1>
+              <h1 className="text-xl font-bold text-primary break-words">{t('appName')}</h1>
             )}
           </div>
           {!isCollapsed && (
@@ -143,7 +143,7 @@ const Navbar = () => {
                     alt="MemoMate Brain Logo" 
                     className="w-8 h-8 object-contain"
                   />
-                  <h1 className="text-2xl font-bold text-primary break-words">MemoMate</h1>
+                  <h1 className="text-2xl font-bold text-primary break-words">{t('appName')}</h1>
                 </div>
                 <SheetClose asChild>
                   <Button variant="ghost" size="icon" className="h-8 w-8">
