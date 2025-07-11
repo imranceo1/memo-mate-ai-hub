@@ -46,45 +46,38 @@ const Analytics = () => {
       const completedTasks = allTasks.filter(task => task.completed || task.status === 'completed').length;
       const totalTasks = allTasks.length;
       
-      // Generate weekly data
+      // Generate empty weekly data
       const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
       const weeklyData = weekDays.map(day => ({
         day,
-        completed: Math.floor(Math.random() * 8) + 1,
-        created: Math.floor(Math.random() * 12) + 2
+        completed: 0,
+        created: 0
       }));
 
-      // Generate category data
+      // Generate empty category data
       const categories = ['Work', 'Personal', 'Health', 'Learning', 'Social'];
       const categoryData = categories.map((name, index) => ({
         name,
-        value: Math.floor(Math.random() * 20) + 5,
+        value: 0,
         color: `hsl(${index * 72}, 70%, 50%)`
       }));
 
-      // Calculate productivity score
-      const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
-      const productivityScore = Math.min(Math.floor(completionRate + Math.random() * 20), 100);
+      // Calculate productivity score (0 since no data)
+      const productivityScore = 0;
 
-      // Generate suggestions based on data
-      const suggestions = [];
-      if (completionRate < 50) {
-        suggestions.push("Consider breaking down large tasks into smaller, manageable chunks");
-      }
-      if (productivityScore > 80) {
-        suggestions.push("Great job! You're maintaining excellent productivity levels");
-      } else if (productivityScore < 60) {
-        suggestions.push("Try scheduling your most important tasks during peak energy hours");
-      }
-      
-      suggestions.push("Review your completed tasks weekly to identify patterns");
-      suggestions.push("Set realistic daily goals to maintain momentum");
+      // Generate suggestions for getting started
+      const suggestions = [
+        "Start by creating your first task to begin tracking your productivity",
+        "Set up reminders to stay on top of important deadlines",
+        "Use the sharing feature to collaborate with your team",
+        "Complete a few tasks to see your analytics come to life"
+      ];
 
       setAnalyticsData({
         completedTasks,
         totalTasks,
-        currentStreak: Math.floor(Math.random() * 15) + 1,
-        longestStreak: Math.floor(Math.random() * 30) + 10,
+        currentStreak: 0,
+        longestStreak: 0,
         weeklyData,
         categoryData,
         productivityScore,
@@ -95,9 +88,7 @@ const Analytics = () => {
     generateAnalytics();
   }, []);
 
-  const completionRate = analyticsData.totalTasks > 0 
-    ? Math.round((analyticsData.completedTasks / analyticsData.totalTasks) * 100) 
-    : 0;
+  const completionRate = 0;
 
   const chartConfig = {
     completed: {
@@ -172,8 +163,8 @@ const Analytics = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-primary">{completionRate}%</div>
-                <Progress value={completionRate} className="mt-2" />
+                <div className="text-2xl font-bold text-primary">0%</div>
+                <Progress value={0} className="mt-2" />
               </CardContent>
             </Card>
 
@@ -185,8 +176,8 @@ const Analytics = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-accent">{analyticsData.productivityScore}</div>
-                <Progress value={analyticsData.productivityScore} className="mt-2" />
+                <div className="text-2xl font-bold text-accent">0</div>
+                <Progress value={0} className="mt-2" />
               </CardContent>
             </Card>
 
@@ -198,8 +189,8 @@ const Analytics = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-secondary">{analyticsData.currentStreak} days</div>
-                <p className="text-xs text-muted-foreground mt-1">Longest: {analyticsData.longestStreak} days</p>
+                <div className="text-2xl font-bold text-secondary">0 days</div>
+                <p className="text-xs text-muted-foreground mt-1">Longest: 0 days</p>
               </CardContent>
             </Card>
 
@@ -228,16 +219,26 @@ const Analytics = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ChartContainer config={chartConfig} className="h-[300px]">
-                  <BarChart data={analyticsData.weeklyData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="day" />
-                    <YAxis />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="completed" fill="var(--color-completed)" radius={4} />
-                    <Bar dataKey="created" fill="var(--color-created)" radius={4} />
-                  </BarChart>
-                </ChartContainer>
+                {analyticsData.weeklyData.length === 0 || analyticsData.weeklyData.every(d => d.completed === 0 && d.created === 0) ? (
+                  <div className="h-[300px] flex items-center justify-center text-center">
+                    <div>
+                      <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">No activity data yet</p>
+                      <p className="text-sm text-muted-foreground">Start creating and completing tasks to see your weekly progress</p>
+                    </div>
+                  </div>
+                ) : (
+                  <ChartContainer config={chartConfig} className="h-[300px]">
+                    <BarChart data={analyticsData.weeklyData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="day" />
+                      <YAxis />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Bar dataKey="completed" fill="var(--color-completed)" radius={4} />
+                      <Bar dataKey="created" fill="var(--color-created)" radius={4} />
+                    </BarChart>
+                  </ChartContainer>
+                )}
               </CardContent>
             </Card>
 
@@ -250,35 +251,47 @@ const Analytics = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ChartContainer config={categoryChartConfig} className="h-[300px]">
-                  <PieChart>
-                    <Pie
-                      data={analyticsData.categoryData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={120}
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
-                      {analyticsData.categoryData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                  </PieChart>
-                </ChartContainer>
-                <div className="grid grid-cols-2 gap-2 mt-4">
-                  {analyticsData.categoryData.map((category, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div 
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: category.color }}
-                      />
-                      <span className="text-sm">{category.name}</span>
+                {analyticsData.categoryData.length === 0 || analyticsData.categoryData.every(c => c.value === 0) ? (
+                  <div className="h-[300px] flex items-center justify-center text-center">
+                    <div>
+                      <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">No category data yet</p>
+                      <p className="text-sm text-muted-foreground">Create tasks in different categories to see the distribution</p>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ) : (
+                  <>
+                    <ChartContainer config={categoryChartConfig} className="h-[300px]">
+                      <PieChart>
+                        <Pie
+                          data={analyticsData.categoryData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={120}
+                          paddingAngle={5}
+                          dataKey="value"
+                        >
+                          {analyticsData.categoryData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                      </PieChart>
+                    </ChartContainer>
+                    <div className="grid grid-cols-2 gap-2 mt-4">
+                      {analyticsData.categoryData.map((category, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <div 
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: category.color }}
+                          />
+                          <span className="text-sm">{category.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -288,7 +301,7 @@ const Analytics = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Brain className="h-5 w-5" />
-                AI-Powered Suggestions
+                Getting Started Tips
               </CardTitle>
             </CardHeader>
             <CardContent>
