@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Bell, BarChart3, Calendar, Sparkles, TrendingUp, Target, Clock } from 'lucide-react';
@@ -24,7 +25,7 @@ const Dashboard: React.FC = () => {
   const { t } = useCommonTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  // Get real-time greeting based on current hour
+  // Utility Functions
   const getTimeBasedGreeting = () => {
     const hour = new Date().getHours();
     if (hour >= 0 && hour < 12) {
@@ -36,7 +37,6 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // Get user email from localStorage
   const getUserEmail = () => {
     const userData = localStorage.getItem('memomate-user');
     if (userData) {
@@ -51,7 +51,7 @@ const Dashboard: React.FC = () => {
     return 'User';
   };
 
-  // Load tasks from localStorage
+  // Data Loading
   useEffect(() => {
     const savedTasks = localStorage.getItem('memomate_tasks');
     if (savedTasks) {
@@ -64,7 +64,7 @@ const Dashboard: React.FC = () => {
     }
   }, []);
 
-  // Get upcoming tasks (next 4 pending tasks with due dates)
+  // Task Processing Functions
   const getUpcomingTasks = () => {
     const now = new Date();
     const pendingTasks = tasks
@@ -98,17 +98,6 @@ const Dashboard: React.FC = () => {
     });
   };
 
-  const upcomingTasks = getUpcomingTasks();
-
-  // Calculate stats based on real data
-  const completedTasks = tasks.filter(task => task.status === 'completed').length;
-  const pendingTasks = tasks.filter(task => task.status === 'pending').length;
-  
-  // Calculate productivity score (completed tasks percentage)
-  const totalTasks = tasks.length;
-  const productivityScore = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-
-  // Calculate streak (consecutive days with completed tasks)
   const calculateStreak = () => {
     const today = new Date();
     let streak = 0;
@@ -133,8 +122,7 @@ const Dashboard: React.FC = () => {
     return streak;
   };
 
-  const streakDays = calculateStreak();
-
+  // Navigation Handlers
   const handleQuickAction = (action: string) => {
     switch (action) {
       case 'addTask':
@@ -152,11 +140,44 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  // Data Calculations
+  const upcomingTasks = getUpcomingTasks();
+  const completedTasks = tasks.filter(task => task.status === 'completed').length;
+  const pendingTasks = tasks.filter(task => task.status === 'pending').length;
+  const totalTasks = tasks.length;
+  const productivityScore = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  const streakDays = calculateStreak();
+
+  // Configuration Data
   const stats = [
-    { icon: Target, label: t('tasksCompleted'), value: completedTasks.toString(), color: 'text-green-600', bgColor: 'bg-green-100' },
-    { icon: Clock, label: t('pendingTasks'), value: pendingTasks.toString(), color: 'text-orange-600', bgColor: 'bg-orange-100' },
-    { icon: TrendingUp, label: t('productivityScore'), value: `${productivityScore}%`, color: 'text-blue-600', bgColor: 'bg-blue-100' },
-    { icon: Calendar, label: t('streakDays'), value: streakDays.toString(), color: 'text-purple-600', bgColor: 'bg-purple-100' },
+    { 
+      icon: Target, 
+      label: t('tasksCompleted'), 
+      value: completedTasks.toString(), 
+      color: 'text-green-600', 
+      bgColor: 'bg-green-100' 
+    },
+    { 
+      icon: Clock, 
+      label: t('pendingTasks'), 
+      value: pendingTasks.toString(), 
+      color: 'text-orange-600', 
+      bgColor: 'bg-orange-100' 
+    },
+    { 
+      icon: TrendingUp, 
+      label: t('productivityScore'), 
+      value: `${productivityScore}%`, 
+      color: 'text-blue-600', 
+      bgColor: 'bg-blue-100' 
+    },
+    { 
+      icon: Calendar, 
+      label: t('streakDays'), 
+      value: streakDays.toString(), 
+      color: 'text-purple-600', 
+      bgColor: 'bg-purple-100' 
+    },
   ];
 
   const quickActions = [
@@ -192,7 +213,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Animated background */}
+      {/* Animated Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-muted/20 animate-gradient" />
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-20 w-40 h-40 bg-primary/20 rounded-full animate-pulse" />
@@ -207,43 +228,46 @@ const Dashboard: React.FC = () => {
       
       <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Welcome Section */}
-        <div className="mb-8 animate-fade-in">
+        <section className="mb-8 animate-fade-in">
           <h1 className="text-3xl font-bold mb-2 text-foreground">
-            {getTimeBasedGreeting()}, @{getUserEmail()}
+            {getTimeBasedGreeting()}, {getUserEmail()}
           </h1>
           <p className="text-muted-foreground">
             {totalTasks > 0 ? t('tasksToday') : t('noTasks')}
           </p>
-        </div>
+        </section>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <Card 
-                key={index} 
-                className="animate-slide-in bg-card/95 backdrop-blur border-border transform hover:scale-105 transition-all duration-200" 
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">{stat.label}</p>
-                      <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+        {/* Statistics Overview */}
+        <section className="mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {stats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <Card 
+                  key={index} 
+                  className="animate-slide-in bg-card/95 backdrop-blur border-border transform hover:scale-105 transition-all duration-200" 
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-muted-foreground">{stat.label}</p>
+                        <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                      </div>
+                      <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                        <Icon className={`w-5 h-5 ${stat.color}`} />
+                      </div>
                     </div>
-                    <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                      <Icon className={`w-5 h-5 ${stat.color}`} />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Quick Actions */}
+        {/* Main Content Grid */}
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Quick Actions Panel */}
           <Card className="animate-bounce-in bg-card/95 backdrop-blur border-border">
             <CardHeader>
               <CardTitle className="text-card-foreground">{t('quickActions')}</CardTitle>
@@ -265,7 +289,7 @@ const Dashboard: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Upcoming Tasks */}
+          {/* Upcoming Tasks Panel */}
           <Card className="animate-bounce-in bg-card/95 backdrop-blur border-border" style={{ animationDelay: '0.2s' }}>
             <CardHeader>
               <CardTitle className="text-card-foreground">{t('upcomingTasks')}</CardTitle>
@@ -302,7 +326,7 @@ const Dashboard: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* AI Insights */}
+          {/* AI Insights Panel */}
           <Card className="animate-bounce-in bg-card/95 backdrop-blur border-border" style={{ animationDelay: '0.4s' }} id="analytics-section">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-card-foreground">
@@ -329,7 +353,7 @@ const Dashboard: React.FC = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </section>
       </div>
     </div>
   );
