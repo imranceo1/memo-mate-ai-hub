@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Bell, BarChart3, Calendar, Sparkles, TrendingUp, Target, Clock } from 'lucide-react';
@@ -24,6 +23,23 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useCommonTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
+
+  // Get real-time greeting based on current hour
+  const getTimeBasedGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 0 && hour < 12) {
+      return 'Good Morning';
+    } else if (hour >= 12 && hour < 16) {
+      return 'Good Afternoon';
+    } else {
+      return 'Good Evening';
+    }
+  };
+
+  // Get username (placeholder for now, can be replaced with actual user data)
+  const getUsername = () => {
+    return 'User'; // This can be replaced with actual user data from context/store
+  };
 
   // Load tasks from localStorage
   useEffect(() => {
@@ -182,7 +198,9 @@ const Dashboard: React.FC = () => {
       <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Welcome Section */}
         <div className="mb-8 animate-fade-in">
-          <h1 className="text-3xl font-bold mb-2 text-foreground">{t('goodMorning')}</h1>
+          <h1 className="text-3xl font-bold mb-2 text-foreground">
+            {getTimeBasedGreeting()}, @{getUsername()}
+          </h1>
           <p className="text-muted-foreground">
             {totalTasks > 0 ? t('tasksToday') : t('noTasks')}
           </p>
