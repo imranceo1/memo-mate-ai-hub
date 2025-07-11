@@ -36,9 +36,19 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // Get username (placeholder for now, can be replaced with actual user data)
-  const getUsername = () => {
-    return 'User'; // This can be replaced with actual user data from context/store
+  // Get user email from localStorage
+  const getUserEmail = () => {
+    const userData = localStorage.getItem('memomate-user');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        return user.email || 'User';
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        return 'User';
+      }
+    }
+    return 'User';
   };
 
   // Load tasks from localStorage
@@ -199,7 +209,7 @@ const Dashboard: React.FC = () => {
         {/* Welcome Section */}
         <div className="mb-8 animate-fade-in">
           <h1 className="text-3xl font-bold mb-2 text-foreground">
-            {getTimeBasedGreeting()}, @{getUsername()}
+            {getTimeBasedGreeting()}, @{getUserEmail()}
           </h1>
           <p className="text-muted-foreground">
             {totalTasks > 0 ? t('tasksToday') : t('noTasks')}
