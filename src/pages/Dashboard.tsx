@@ -118,7 +118,7 @@ const Dashboard: React.FC = () => {
         navigate('/reminders');
         break;
       case 'viewAnalytics':
-        document.getElementById('analytics-section')?.scrollIntoView({ behavior: 'smooth' });
+        navigate('/analytics');
         break;
       case 'viewAllTasks':
         navigate('/timeline');
