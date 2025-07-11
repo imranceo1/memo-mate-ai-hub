@@ -28,7 +28,7 @@ export const useTaskFilters = ({ tasks, searchQuery = '' }: UseTaskFiltersProps)
 
       // Status filter
       if (filters.status !== 'all') {
-        const taskStatus = task.completed ? 'completed' : 'pending';
+        const taskStatus = task.status;
         if (taskStatus !== filters.status) return false;
       }
 

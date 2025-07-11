@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useTaskStore } from '@/stores/useTaskStore';
-import { useCommonTranslation } from '@/hooks/useTranslation';
+import { useCommonTranslation } from '@/hooks/useCommonTranslation';
 
 interface TaskModalProps {
   trigger?: React.ReactNode;

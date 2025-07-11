@@ -20,7 +20,7 @@ import { useCommonTranslation } from '@/hooks/useCommonTranslation';
 const Timeline = () => {
   const { t: tLang } = useLanguage();
   const { t } = useCommonTranslation();
-  const { tasks, updateTaskOrder } = useTaskStore();
+  const { tasks } = useTaskStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'list' | 'drag' | 'stats'>('list');
@@ -49,7 +49,8 @@ const Timeline = () => {
   }, [filteredTasks]);
 
   const handleTasksReorder = (reorderedTasks: any[]) => {
-    updateTaskOrder(reorderedTasks);
+    // Handle task reordering logic here
+    console.log('Tasks reordered:', reorderedTasks);
   };
 
   return (
@@ -178,7 +179,7 @@ const Timeline = () => {
 
       <TaskModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onOpenChange={setIsModalOpen}
       />
     </div>
   );

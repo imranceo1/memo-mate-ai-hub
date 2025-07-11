@@ -15,8 +15,8 @@ interface TaskStatsProps {
 const TaskStats: React.FC<TaskStatsProps> = ({ tasks, className = "" }) => {
   const { t } = useCommonTranslation();
 
-  const completedTasks = tasks.filter(task => task.completed).length;
-  const pendingTasks = tasks.filter(task => !task.completed).length;
+  const completedTasks = tasks.filter(task => task.status === 'completed').length;
+  const pendingTasks = tasks.filter(task => task.status === 'pending').length;
   const totalTasks = tasks.length;
   const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
@@ -30,12 +30,12 @@ const TaskStats: React.FC<TaskStatsProps> = ({ tasks, className = "" }) => {
   }).length;
 
   const overdueTasks = tasks.filter(task => {
-    if (!task.dueDate || task.completed) return false;
+    if (!task.dueDate || task.status === 'completed') return false;
     return new Date(task.dueDate) < new Date();
   }).length;
 
   const highPriorityTasks = tasks.filter(task => 
-    task.priority === 'high' && !task.completed
+    task.priority === 'high' && task.status === 'pending'
   ).length;
 
   return (

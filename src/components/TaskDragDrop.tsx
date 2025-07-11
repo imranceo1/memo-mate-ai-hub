@@ -80,7 +80,7 @@ const TaskDragDrop: React.FC<TaskDragDropProps> = ({
               <GripVertical className="h-4 w-4 text-muted-foreground" />
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className={`font-medium ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                  <span className={`font-medium ${task.status === 'completed' ? 'line-through text-muted-foreground' : ''}`}>
                     {task.title}
                   </span>
                   <Badge variant={task.priority === 'high' ? 'destructive' : task.priority === 'medium' ? 'default' : 'secondary'}>

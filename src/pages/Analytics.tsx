@@ -45,7 +45,7 @@ const Analytics = () => {
       
       // Simulate loading delay
       setTimeout(() => {
-        const completedTasks = tasks.filter(task => task.completed).length;
+        const completedTasks = tasks.filter(task => task.status === 'completed').length;
         const totalTasks = tasks.length;
         
         // Generate weekly data based on actual tasks
@@ -60,7 +60,7 @@ const Analytics = () => {
           
           return {
             day,
-            completed: dayTasks.filter(task => task.completed).length,
+            completed: dayTasks.filter(task => task.status === 'completed').length,
             created: dayTasks.length
           };
         });
@@ -105,7 +105,7 @@ const Analytics = () => {
         });
         
         setIsLoading(false);
-      }, 1000);
+      }, 800);
     };
 
     generateAnalytics();
