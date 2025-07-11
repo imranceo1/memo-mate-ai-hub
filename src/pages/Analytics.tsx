@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
 import Navbar from '@/components/Navbar';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -107,6 +107,29 @@ const Analytics = () => {
     created: {
       label: "Created", 
       color: "hsl(var(--muted-foreground))",
+    },
+  };
+
+  const categoryChartConfig = {
+    Work: {
+      label: "Work",
+      color: "hsl(0, 70%, 50%)",
+    },
+    Personal: {
+      label: "Personal", 
+      color: "hsl(72, 70%, 50%)",
+    },
+    Health: {
+      label: "Health",
+      color: "hsl(144, 70%, 50%)",
+    },
+    Learning: {
+      label: "Learning",
+      color: "hsl(216, 70%, 50%)",
+    },
+    Social: {
+      label: "Social",
+      color: "hsl(288, 70%, 50%)",
     },
   };
 
@@ -227,26 +250,24 @@ const Analytics = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-[300px] flex items-center justify-center">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={analyticsData.categoryData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={120}
-                        paddingAngle={5}
-                        dataKey="value"
-                      >
-                        {analyticsData.categoryData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
+                <ChartContainer config={categoryChartConfig} className="h-[300px]">
+                  <PieChart>
+                    <Pie
+                      data={analyticsData.categoryData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={120}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {analyticsData.categoryData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                  </PieChart>
+                </ChartContainer>
                 <div className="grid grid-cols-2 gap-2 mt-4">
                   {analyticsData.categoryData.map((category, index) => (
                     <div key={index} className="flex items-center gap-2">
