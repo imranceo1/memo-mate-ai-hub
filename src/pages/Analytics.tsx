@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BarChart3, TrendingUp, Target, Clock, Calendar, Brain, Zap, Award } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
 import Navbar from '@/components/Navbar';
-import LoadingSpinner from '@/components/LoadingSpinner';
+
 import EmptyState from '@/components/EmptyState';
 import { useAnalyticsTranslation } from '@/hooks/useAnalyticsTranslation';
 import { useTaskStore } from '@/stores/useTaskStore';
@@ -27,89 +27,106 @@ interface AnalyticsData {
 const Analytics = () => {
   const { t } = useAnalyticsTranslation();
   const { tasks } = useTaskStore();
-  const [isLoading, setIsLoading] = useState(true);
-  const [analyticsData, setAnalyticsData] = useState<AnalyticsData>({
-    completedTasks: 0,
-    totalTasks: 0,
-    currentStreak: 0,
-    longestStreak: 0,
-    weeklyData: [],
-    categoryData: [],
-    productivityScore: 0,
-    suggestions: []
+
+  // Generate analytics data directly without loading state
+  const completedTasks = tasks.filter(task => task.status === 'completed').length;
+  const totalTasks = tasks.length;
+  
+  // Generate weekly data based on actual tasks
+  const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const weeklyData = weekDays.map(day => {
+    const dayTasks = tasks.filter(task => {
+      if (!task.dueDate) return false;
+      const taskDate = new Date(task.dueDate);
+      const dayIndex = weekDays.indexOf(day);
+      return taskDate.getDay() === (dayIndex + 1) % 7;
+    });
+    
+    return {
+      day,
+      completed: dayTasks.filter(task => task.status === 'completed').length,
+      created: dayTasks.length
+    };
   });
 
-  useEffect(() => {
-    const generateAnalytics = () => {
-      setIsLoading(true);
-      
-      // Simulate loading delay
-      setTimeout(() => {
-        const completedTasks = tasks.filter(task => task.status === 'completed').length;
-        const totalTasks = tasks.length;
-        
-        // Generate weekly data based on actual tasks
-        const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        const weeklyData = weekDays.map(day => {
-          const dayTasks = tasks.filter(task => {
-            if (!task.dueDate) return false;
-            const taskDate = new Date(task.dueDate);
-            const dayIndex = weekDays.indexOf(day);
-            return taskDate.getDay() === (dayIndex + 1) % 7;
-          });
-          
-          return {
-            day,
-            completed: dayTasks.filter(task => task.status === 'completed').length,
-            created: dayTasks.length
-          };
-        });
+  // Generate category data based on task priorities
+  const categories = [
+    { name: t('work'), priority: 'high', color: 'hsl(0, 70%, 50%)' },
+    { name: t('personal'), priority: 'medium', color: 'hsl(72, 70%, 50%)' },
+    { name: t('health'), priority: 'low', color: 'hsl(144, 70%, 50%)' },
+    { name: t('learning'), priority: 'medium', color: 'hsl(216, 70%, 50%)' },
+    { name: t('social'), priority: 'low', color: 'hsl(288, 70%, 50%)' }
+  ];
+  
+  const categoryData = categories.map(category => ({
+    name: category.name,
+    value: tasks.filter(task => task.priority === category.priority).length,
+    color: category.color
+  }));
 
-        // Generate category data based on task priorities
-        const categories = [
-          { name: t('work'), priority: 'high', color: 'hsl(0, 70%, 50%)' },
-          { name: t('personal'), priority: 'medium', color: 'hsl(72, 70%, 50%)' },
-          { name: t('health'), priority: 'low', color: 'hsl(144, 70%, 50%)' },
-          { name: t('learning'), priority: 'medium', color: 'hsl(216, 70%, 50%)' },
-          { name: t('social'), priority: 'low', color: 'hsl(288, 70%, 50%)' }
-        ];
-        
-        const categoryData = categories.map(category => ({
-          name: category.name,
-          value: tasks.filter(task => task.priority === category.priority).length,
-          color: category.color
-        }));
+  // Calculate productivity score
+  const productivityScore = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-        // Calculate productivity score
-        const productivityScore = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-
-        // Generate suggestions based on data
+          // Generate suggestions based on data
         const suggestions = [
-          totalTasks === 0 ? "Start by creating your first task to begin tracking your productivity" : null,
-          completedTasks === 0 && totalTasks > 0 ? "Try completing a few tasks to see your progress" : null,
-          productivityScore > 80 ? "Great job! You're maintaining excellent productivity" : null,
-          productivityScore < 50 && totalTasks > 0 ? "Consider breaking down large tasks into smaller, manageable pieces" : null,
-          "Set up reminders to stay on top of important deadlines",
-          "Use the sharing feature to collaborate with your team"
+          totalTasks === 0 ? t('tipStartFirstTask') : null,
+          completedTasks === 0 && totalTasks > 0 ? t('tipCompleteTasks') : null,
+          productivityScore > 80 ? t('tipGreatJob') : null,
+          productivityScore < 50 && totalTasks > 0 ? t('tipBreakDownTasks') : null,
+          t('tipSetReminders'),
+          t('tipUseSharing')
         ].filter(Boolean) as string[];
 
-        setAnalyticsData({
-          completedTasks,
-          totalTasks,
-          currentStreak: 0, // TODO: Implement streak calculation
-          longestStreak: 0,
-          weeklyData,
-          categoryData,
-          productivityScore,
-          suggestions: suggestions.slice(0, 4)
-        });
-        
-        setIsLoading(false);
-      }, 800);
-    };
+  // Calculate current streak based on completed tasks
+  const calculateCurrentStreak = () => {
+    const completedTasks = tasks.filter(task => task.status === 'completed');
+    if (completedTasks.length === 0) return 0;
+    
+    // Sort by completion date (assuming we track when tasks were completed)
+    const sortedTasks = completedTasks.sort((a, b) => {
+      const dateA = new Date(a.dueDate || a.createdAt || 0);
+      const dateB = new Date(b.dueDate || b.createdAt || 0);
+      return dateB.getTime() - dateA.getTime();
+    });
+    
+    // Simple streak calculation - count consecutive days with completed tasks
+    let streak = 1;
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    // Check if we have tasks completed today and yesterday
+    const hasTaskToday = completedTasks.some(task => {
+      const taskDate = new Date(task.dueDate || task.createdAt || 0);
+      return taskDate.toDateString() === today.toDateString();
+    });
+    
+    const hasTaskYesterday = completedTasks.some(task => {
+      const taskDate = new Date(task.dueDate || task.createdAt || 0);
+      return taskDate.toDateString() === yesterday.toDateString();
+    });
+    
+    if (hasTaskToday && hasTaskYesterday) {
+      streak = 2; // Basic streak calculation
+    } else if (hasTaskToday) {
+      streak = 1;
+    } else {
+      streak = 0;
+    }
+    
+    return streak;
+  };
 
-    generateAnalytics();
-  }, [tasks, t]);
+  const analyticsData = {
+    completedTasks,
+    totalTasks,
+    currentStreak: calculateCurrentStreak(),
+    longestStreak: Math.max(calculateCurrentStreak(), 0), // Simple implementation
+    weeklyData,
+    categoryData,
+    productivityScore,
+    suggestions: suggestions.slice(0, 4)
+  };
 
   const completionRate = analyticsData.totalTasks > 0 
     ? Math.round((analyticsData.completedTasks / analyticsData.totalTasks) * 100) 
@@ -149,19 +166,7 @@ const Analytics = () => {
     },
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-          <div className="text-center">
-            <LoadingSpinner size="lg" className="mb-4" />
-            <p className="text-muted-foreground">Loading analytics...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen bg-background">

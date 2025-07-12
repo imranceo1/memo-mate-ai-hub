@@ -106,6 +106,10 @@ export interface Translations {
   created: string;
   accept: string;
   complete: string;
+  selectTaskToShare: string;
+  shareDetails: string;
+  all: string;
+  createTasksToShare: string;
   
   // Chat
   chatWithMemoMate: string;
@@ -159,6 +163,9 @@ export interface Translations {
   pending: string;
   completed: string;
   cancel: string;
+  searchTasks: string;
+  noTasksFound: string;
+  noUpcomingTasks: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -265,6 +272,10 @@ export const translations: Record<Language, Translations> = {
     created: 'Created',
     accept: 'Accept',
     complete: 'Complete',
+    selectTaskToShare: 'Select Task to Share',
+    shareDetails: 'Share Details',
+    all: 'All',
+    createTasksToShare: 'Create tasks to share with your team',
     
     // Chat
     chatWithMemoMate: 'Chat with MemoMate',
@@ -318,6 +329,9 @@ export const translations: Record<Language, Translations> = {
     pending: "Pending",
     completed: "Completed",
     cancel: "Cancel",
+    searchTasks: "Search tasks...",
+    noTasksFound: "No tasks found",
+    noUpcomingTasks: "No upcoming tasks",
   },
   hi: {
     // Navigation
@@ -422,6 +436,10 @@ export const translations: Record<Language, Translations> = {
     created: 'बनाया गया',
     accept: 'स्वीकार करें',
     complete: 'पूर्ण',
+    selectTaskToShare: 'साझा करने के लिए कार्य चुनें',
+    shareDetails: 'साझा करने का विवरण',
+    all: 'सभी',
+    createTasksToShare: 'अपनी टीम के साथ साझा करने के लिए कार्य बनाएं',
     
     // Chat
     chatWithMemoMate: 'मेमोमेट के साथ चैट करें',
@@ -475,6 +493,9 @@ export const translations: Record<Language, Translations> = {
     pending: "लंबित",
     completed: "पूर्ण",
     cancel: "रद्द करें",
+    searchTasks: "कार्य खोजें...",
+    noTasksFound: "कोई कार्य नहीं मिला",
+    noUpcomingTasks: "कोई आगामी कार्य नहीं",
   },
   ta: {
     // Navigation
@@ -579,6 +600,10 @@ export const translations: Record<Language, Translations> = {
     created: 'உருவாக்கப்பட்டது',
     accept: 'ஏற்றுக்கொள்',
     complete: 'முடி',
+    selectTaskToShare: 'பகிர பணியைத் தேர்ந்தெடுக்கவும்',
+    shareDetails: 'பகிர்வு விவரங்கள்',
+    all: 'அனைத்தும்',
+    createTasksToShare: 'உங்கள் குழுவுடன் பகிர பணிகளை உருவாக்கவும்',
     
     // Chat
     chatWithMemoMate: 'மெமோமேட்டுடன் அரட்டை அடிக்கவும்',
@@ -632,6 +657,9 @@ export const translations: Record<Language, Translations> = {
     pending: "நிலுவையில் உள்ளது",
     completed: "முடிந்தது",
     cancel: "ரத்து செய்",
+    searchTasks: "பணிகளைத் தேடுங்கள்...",
+    noTasksFound: "பணிகள் எதுவும் கிடைக்கவில்லை",
+    noUpcomingTasks: "வரவிருக்கும் பணிகள் இல்லை",
   },
   te: {
     // Navigation
@@ -736,6 +764,10 @@ export const translations: Record<Language, Translations> = {
     created: 'సృష్టించబడింది',
     accept: 'అంగీకరించు',
     complete: 'పూర్తి',
+    selectTaskToShare: 'షేర్ చేయడానికి టాస్క్‌ని ఎంచుకోండి',
+    shareDetails: 'షేర్ వివరాలు',
+    all: 'అన్నీ',
+    createTasksToShare: 'మీ జట్టుతో షేర్ చేయడానికి టాస్క్‌లను సృష్టించండి',
     
     // Chat
     chatWithMemoMate: 'మెమోమేట్‌తో చాట్ చేయండి',
@@ -789,6 +821,9 @@ export const translations: Record<Language, Translations> = {
     pending: "పెండింగ్‌లో ఉంది",
     completed: "పూర్తయింది",
     cancel: "రద్దు చేయి",
+    searchTasks: "టాస్క్‌లను శోధించండి...",
+    noTasksFound: "టాస్క్‌లు కనుగొనబడలేదు",
+    noUpcomingTasks: "రాబోయే టాస్క్‌లు లేవు",
   },
   ko: {
     // Navigation
@@ -893,6 +928,10 @@ export const translations: Record<Language, Translations> = {
     created: '생성됨',
     accept: '수락',
     complete: '완료',
+    selectTaskToShare: '공유할 작업 선택',
+    shareDetails: '공유 세부사항',
+    all: '모든',
+    createTasksToShare: '팀과 공유할 작업을 만드세요',
     
     // Chat
     chatWithMemoMate: '메모메이트와 채팅',
@@ -946,6 +985,9 @@ export const translations: Record<Language, Translations> = {
     pending: "보류 중",
     completed: "완료됨",
     cancel: "취소",
+    searchTasks: "작업 검색...",
+    noTasksFound: "작업을 찾을 수 없습니다",
+    noUpcomingTasks: "예정된 작업이 없습니다",
   },
 };
 

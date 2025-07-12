@@ -81,6 +81,69 @@ export const commonTranslations = {
     sms: 'SMS',
     pending: 'Pending',
     completed: 'Completed',
+    
+    // Timeline specific translations
+    stats: 'Stats',
+    dragAndDrop: 'Drag & Drop',
+    list: 'List',
+    allTasks: 'All Tasks',
+    filteredTasks: 'Filtered Tasks',
+    noTasksFound: 'No tasks found',
+    tryAdjustingSearch: 'Try adjusting your search or filters to find tasks.',
+    clearFilters: 'Clear Filters',
+    getStartedByCreating: 'Get started by creating your first task!',
+    searchTasks: 'Search tasks...',
+    
+    // Timeline filters
+    all: 'All',
+    today: 'Today',
+    tomorrow: 'Tomorrow',
+    
+    // Task Modal specific translations
+    taskTitleRequired: 'Task title is required',
+    dueDateCannotBePast: 'Due date cannot be in the past',
+    creating: 'Creating...',
+    createTask: 'Create Task',
+    
+    // Task Sharing translations
+    shareNewTask: 'Share New Task',
+    selectTaskToShare: 'Select Task to Share',
+    shareDetails: 'Share Details',
+    assignTo: 'Assign To',
+    enterEmailAddress: 'Enter email address',
+    role: 'Role',
+    viewer: 'Viewer',
+    editor: 'Editor',
+    admin: 'Admin',
+    viewerDesc: 'Can view task only',
+    editorDesc: 'Can edit task',
+    adminDesc: 'Full control over task',
+    shareTask: 'Share Task',
+    
+    // Additional sharing translations
+    collaborateWithTeam: 'Collaborate with your team',
+    tasksShared: 'Tasks Shared',
+    tasksReceived: 'Tasks Received',
+    activeCollaborators: 'Active Collaborators',
+    sharedByMe: 'Shared by Me',
+    receivedByMe: 'Received by Me',
+    noSharedTasks: 'No shared tasks yet',
+    startSharingTasks: 'Start sharing tasks with your team',
+    shareFirstTask: 'Share First Task',
+    noReceivedTasks: 'No received tasks yet',
+    waitingForTasks: 'Waiting for tasks from your team',
+    createTasksToShare: 'Create tasks to share with your team',
+    
+    // SharedTaskCard translations
+    assignedBy: 'Assigned By',
+    acceptTask: 'Accept Task',
+    markComplete: 'Mark Complete',
+    markIncomplete: 'Mark Incomplete',
+    deleteTask: 'Delete Task',
+    showLess: 'Show Less',
+    showMore: 'Show More',
+    accept: 'Accept',
+    complete: 'Complete',
   },
   hi: {
     // App name
@@ -163,6 +226,69 @@ export const commonTranslations = {
     sms: 'एसएमएस',
     pending: 'लंबित',
     completed: 'पूर्ण',
+    
+    // Timeline specific translations
+    stats: 'आंकड़े',
+    dragAndDrop: 'खींचें और छोड़ें',
+    list: 'सूची',
+    allTasks: 'सभी कार्य',
+    filteredTasks: 'फ़िल्टर किए गए कार्य',
+    noTasksFound: 'कोई कार्य नहीं मिला',
+    tryAdjustingSearch: 'कार्य खोजने के लिए अपनी खोज या फ़िल्टर को समायोजित करने का प्रयास करें।',
+    clearFilters: 'फ़िल्टर साफ़ करें',
+    getStartedByCreating: 'अपना पहला कार्य बनाकर शुरू करें!',
+    searchTasks: 'कार्य खोजें...',
+    
+    // Timeline filters
+    all: 'सभी',
+    today: 'आज',
+    tomorrow: 'कल',
+    
+    // Task Modal specific translations
+    taskTitleRequired: 'कार्य शीर्षक आवश्यक है',
+    dueDateCannotBePast: 'देय तिथि अतीत में नहीं हो सकती',
+    creating: 'बना रहा है...',
+    createTask: 'कार्य बनाएं',
+    
+    // Task Sharing translations
+    shareNewTask: 'नया कार्य साझा करें',
+    selectTaskToShare: 'साझा करने के लिए कार्य चुनें',
+    shareDetails: 'साझा करने का विवरण',
+    assignTo: 'निर्दिष्ट करें',
+    enterEmailAddress: 'ईमेल पता दर्ज करें',
+    role: 'भूमिका',
+    viewer: 'दर्शक',
+    editor: 'संपादक',
+    admin: 'प्रशासक',
+    viewerDesc: 'केवल कार्य देख सकते हैं',
+    editorDesc: 'कार्य संपादित कर सकते हैं',
+    adminDesc: 'कार्य पर पूर्ण नियंत्रण',
+    shareTask: 'कार्य साझा करें',
+    
+    // Additional sharing translations
+    collaborateWithTeam: 'अपनी टीम के साथ सहयोग करें',
+    tasksShared: 'साझा किए गए कार्य',
+    tasksReceived: 'प्राप्त किए गए कार्य',
+    activeCollaborators: 'सक्रिय सहयोगी',
+    sharedByMe: 'मेरे द्वारा साझा किए गए',
+    receivedByMe: 'मुझे प्राप्त किए गए',
+    noSharedTasks: 'अभी तक कोई साझा कार्य नहीं',
+    startSharingTasks: 'अपनी टीम के साथ कार्य साझा करना शुरू करें',
+    shareFirstTask: 'पहला कार्य साझा करें',
+    noReceivedTasks: 'अभी तक कोई प्राप्त कार्य नहीं',
+    waitingForTasks: 'अपनी टीम से कार्यों की प्रतीक्षा कर रहे हैं',
+    createTasksToShare: 'अपनी टीम के साथ साझा करने के लिए कार्य बनाएं',
+    
+    // SharedTaskCard translations
+    assignedBy: 'द्वारा निर्दिष्ट',
+    acceptTask: 'कार्य स्वीकार करें',
+    markComplete: 'पूर्ण चिह्नित करें',
+    markIncomplete: 'अपूर्ण चिह्नित करें',
+    deleteTask: 'कार्य हटाएं',
+    showLess: 'कम दिखाएं',
+    showMore: 'अधिक दिखाएं',
+    accept: 'स्वीकार करें',
+    complete: 'पूर्ण करें',
   },
   ta: {
     // App name
@@ -245,6 +371,69 @@ export const commonTranslations = {
     sms: 'எஸ்எம்எஸ்',
     pending: 'நிலுவையில்',
     completed: 'முடிந்தது',
+    
+    // Timeline specific translations
+    stats: 'புள்ளிவிவரங்கள்',
+    dragAndDrop: 'இழுத்து விடு',
+    list: 'பட்டியல்',
+    allTasks: 'அனைத்து பணிகள்',
+    filteredTasks: 'வடிப்படுத்தப்பட்ட பணிகள்',
+    noTasksFound: 'பணிகள் எதுவும் கிடைக்கவில்லை',
+    tryAdjustingSearch: 'பணிகளைக் கண்டுபிடிக்க உங்கள் தேடல் அல்லது வடிப்பான்களை சரிசெய்ய முயற்சிக்கவும்.',
+    clearFilters: 'வடிப்பான்களை அழி',
+    getStartedByCreating: 'உங்கள் முதல் பணியை உருவாக்குவதன் மூலம் தொடங்குங்கள்!',
+    searchTasks: 'பணிகளைத் தேடுங்கள்...',
+    
+    // Timeline filters
+    all: 'அனைத்தும்',
+    today: 'இன்று',
+    tomorrow: 'நாளை',
+    
+    // Task Modal specific translations
+    taskTitleRequired: 'பணி தலைப்பு தேவை',
+    dueDateCannotBePast: 'செலுத்த வேண்டிய தேதி கடந்த காலத்தில் இருக்க முடியாது',
+    creating: 'உருவாக்குகிறது...',
+    createTask: 'பணியை உருவாக்கு',
+    
+    // Task Sharing translations
+    shareNewTask: 'புதிய பணியை பகிர்',
+    selectTaskToShare: 'பகிர பணியைத் தேர்ந்தெடுக்கவும்',
+    shareDetails: 'பகிர்வு விவரங்கள்',
+    assignTo: 'ஒதுக்கு',
+    enterEmailAddress: 'மின்னஞ்சல் முகவரியை உள்ளிடவும்',
+    role: 'பங்கு',
+    viewer: 'பார்வையாளர்',
+    editor: 'தொகுப்பாளர்',
+    admin: 'நிர்வாகி',
+    viewerDesc: 'பணியை மட்டும் பார்க்க முடியும்',
+    editorDesc: 'பணியைத் திருத்த முடியும்',
+    adminDesc: 'பணியில் முழு கட்டுப்பாடு',
+    shareTask: 'பணியை பகிர்',
+    
+    // Additional sharing translations
+    collaborateWithTeam: 'உங்கள் குழுவுடன் ஒத்துழைக்கவும்',
+    tasksShared: 'பகிரப்பட்ட பணிகள்',
+    tasksReceived: 'பெறப்பட்ட பணிகள்',
+    activeCollaborators: 'செயலில் உள்ள ஒத்துழைப்பாளர்கள்',
+    sharedByMe: 'என்னால் பகிரப்பட்டவை',
+    receivedByMe: 'எனக்கு பெறப்பட்டவை',
+    noSharedTasks: 'இன்னும் பகிரப்பட்ட பணிகள் இல்லை',
+    startSharingTasks: 'உங்கள் குழுவுடன் பணிகளை பகிரத் தொடங்கவும்',
+    shareFirstTask: 'முதல் பணியை பகிர்',
+    noReceivedTasks: 'இன்னும் பெறப்பட்ட பணிகள் இல்லை',
+    waitingForTasks: 'உங்கள் குழுவிடமிருந்து பணிகளுக்காக காத்திருக்கிறீர்கள்',
+    createTasksToShare: 'உங்கள் குழுவுடன் பகிர பணிகளை உருவாக்கவும்',
+    
+    // SharedTaskCard translations
+    assignedBy: 'ஒதுக்கப்பட்டது',
+    acceptTask: 'பணியை ஏற்கவும்',
+    markComplete: 'முடிந்ததாக குறிக்கவும்',
+    markIncomplete: 'முடியாததாக குறிக்கவும்',
+    deleteTask: 'பணியை நீக்கவும்',
+    showLess: 'குறைவாக காட்டு',
+    showMore: 'மேலும் காட்டு',
+    accept: 'ஏற்கவும்',
+    complete: 'முடிக்கவும்',
   },
   te: {
     // App name
@@ -327,6 +516,69 @@ export const commonTranslations = {
     sms: 'ఎస్ఎంఎస్',
     pending: 'పెండింగ్',
     completed: 'పూర్తయింది',
+    
+    // Timeline specific translations
+    stats: 'గణాంకాలు',
+    dragAndDrop: 'లాగి వదలండి',
+    list: 'జాబితా',
+    allTasks: 'అన్ని టాస్క్‌లు',
+    filteredTasks: 'ఫిల్టర్ చేసిన టాస్క్‌లు',
+    noTasksFound: 'టాస్క్‌లు కనుగొనబడలేదు',
+    tryAdjustingSearch: 'టాస్క్‌లను కనుగొనడానికి మీ శోధన లేదా ఫిల్టర్‌లను సర్దుబాటు చేయడానికి ప్రయత్నించండి.',
+    clearFilters: 'ఫిల్టర్‌లను క్లియర్ చేయండి',
+    getStartedByCreating: 'మీ మొదటి టాస్క్‌ని సృష్టించడం ద్వారా ప్రారంభించండి!',
+    searchTasks: 'టాస్క్‌లను శోధించండి...',
+    
+    // Timeline filters
+    all: 'అన్నీ',
+    today: 'ఈరోజు',
+    tomorrow: 'రేపు',
+    
+    // Task Modal specific translations
+    taskTitleRequired: 'టాస్క్ శీర్షిక అవసరం',
+    dueDateCannotBePast: 'గడువు తేదీ గతంలో ఉండకూడదు',
+    creating: 'సృష్టిస్తోంది...',
+    createTask: 'టాస్క్‌ని సృష్టించండి',
+    
+    // Task Sharing translations
+    shareNewTask: 'కొత్త టాస్క్‌ని షేర్ చేయండి',
+    selectTaskToShare: 'షేర్ చేయడానికి టాస్క్‌ని ఎంచుకోండి',
+    shareDetails: 'షేర్ వివరాలు',
+    assignTo: 'కేటాయించు',
+    enterEmailAddress: 'ఇమెయిల్ చిరునామాను నమోదు చేయండి',
+    role: 'పాత్ర',
+    viewer: 'వీక్షకుడు',
+    editor: 'ఎడిటర్',
+    admin: 'అడ్మిన్',
+    viewerDesc: 'టాస్క్‌ని మాత్రమే చూడగలరు',
+    editorDesc: 'టాస్క్‌ని సవరించగలరు',
+    adminDesc: 'టాస్క్‌పై పూర్తి నియంత్రణ',
+    shareTask: 'టాస్క్‌ని షేర్ చేయండి',
+    
+    // Additional sharing translations
+    collaborateWithTeam: 'మీ జట్టుతో సహకరించండి',
+    tasksShared: 'షేర్ చేసిన టాస్క్‌లు',
+    tasksReceived: 'స్వీకరించిన టాస్క్‌లు',
+    activeCollaborators: 'క్రియాశీల సహకారులు',
+    sharedByMe: 'నా చేత షేర్ చేయబడినవి',
+    receivedByMe: 'నాకు స్వీకరించబడినవి',
+    noSharedTasks: 'ఇంకా షేర్ చేసిన టాస్క్‌లు లేవు',
+    startSharingTasks: 'మీ జట్టుతో టాస్క్‌లను షేర్ చేయడం ప్రారంభించండి',
+    shareFirstTask: 'మొదటి టాస్క్‌ని షేర్ చేయండి',
+    noReceivedTasks: 'ఇంకా స్వీకరించిన టాస్క్‌లు లేవు',
+    waitingForTasks: 'మీ జట్టు నుండి టాస్క్‌ల కోసం వేచి ఉన్నారు',
+    createTasksToShare: 'మీ జట్టుతో షేర్ చేయడానికి టాస్క్‌లను సృష్టించండి',
+    
+    // SharedTaskCard translations
+    assignedBy: 'కేటాయించబడింది',
+    acceptTask: 'టాస్క్‌ని అంగీకరించండి',
+    markComplete: 'పూర్తయింది గా గుర్తించండి',
+    markIncomplete: 'పూర్తి కాలేదు గా గుర్తించండి',
+    deleteTask: 'టాస్క్‌ని తొలగించండి',
+    showLess: 'తక్కువ చూపించు',
+    showMore: 'మరిన్ని చూపించు',
+    accept: 'అంగీకరించు',
+    complete: 'పూర్తి చేయు',
   },
   ko: {
     // App name
@@ -409,5 +661,68 @@ export const commonTranslations = {
     sms: '문자',
     pending: '대기중',
     completed: '완료',
+    
+    // Timeline specific translations
+    stats: '통계',
+    dragAndDrop: '드래그 앤 드롭',
+    list: '목록',
+    allTasks: '모든 작업',
+    filteredTasks: '필터링된 작업',
+    noTasksFound: '작업을 찾을 수 없습니다',
+    tryAdjustingSearch: '작업을 찾기 위해 검색이나 필터를 조정해보세요.',
+    clearFilters: '필터 지우기',
+    getStartedByCreating: '첫 번째 작업을 만들어 시작하세요!',
+    searchTasks: '작업 검색...',
+    
+    // Timeline filters
+    all: '모두',
+    today: '오늘',
+    tomorrow: '내일',
+    
+    // Task Modal specific translations
+    taskTitleRequired: '작업 제목이 필요합니다',
+    dueDateCannotBePast: '마감일은 과거일 수 없습니다',
+    creating: '생성 중...',
+    createTask: '작업 생성',
+    
+    // Task Sharing translations
+    shareNewTask: '새 작업 공유',
+    selectTaskToShare: '공유할 작업 선택',
+    shareDetails: '공유 세부사항',
+    assignTo: '할당 대상',
+    enterEmailAddress: '이메일 주소 입력',
+    role: '역할',
+    viewer: '뷰어',
+    editor: '편집자',
+    admin: '관리자',
+    viewerDesc: '작업만 볼 수 있음',
+    editorDesc: '작업을 편집할 수 있음',
+    adminDesc: '작업에 대한 완전한 제어',
+    shareTask: '작업 공유',
+    
+    // Additional sharing translations
+    collaborateWithTeam: '팀과 협업하세요',
+    tasksShared: '공유된 작업',
+    tasksReceived: '받은 작업',
+    activeCollaborators: '활성 협업자',
+    sharedByMe: '내가 공유한 작업',
+    receivedByMe: '내가 받은 작업',
+    noSharedTasks: '아직 공유된 작업이 없습니다',
+    startSharingTasks: '팀과 작업을 공유하기 시작하세요',
+    shareFirstTask: '첫 번째 작업 공유',
+    noReceivedTasks: '아직 받은 작업이 없습니다',
+    waitingForTasks: '팀으로부터 작업을 기다리고 있습니다',
+    createTasksToShare: '팀과 공유할 작업을 만드세요',
+    
+    // SharedTaskCard translations
+    assignedBy: '할당자',
+    acceptTask: '작업 수락',
+    markComplete: '완료로 표시',
+    markIncomplete: '미완료로 표시',
+    deleteTask: '작업 삭제',
+    showLess: '간단히 보기',
+    showMore: '더 보기',
+    accept: '수락',
+    complete: '완료',
   },
 };

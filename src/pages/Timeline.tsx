@@ -12,7 +12,7 @@ import TaskStats from '@/components/TaskStats';
 import TaskDragDrop from '@/components/TaskDragDrop';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
-import { useTaskStore } from '@/stores/useTaskStore';
+import { useTaskStore, Task } from '@/stores/useTaskStore';
 import { useTaskFilters } from '@/hooks/useTaskFilters';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCommonTranslation } from '@/hooks/useCommonTranslation';
@@ -48,7 +48,7 @@ const Timeline = () => {
     });
   }, [filteredTasks]);
 
-  const handleTasksReorder = (reorderedTasks: any[]) => {
+  const handleTasksReorder = (reorderedTasks: Task[]) => {
     // Handle task reordering logic here
     console.log('Tasks reordered:', reorderedTasks);
   };
@@ -77,21 +77,21 @@ const Timeline = () => {
               onClick={() => setViewMode('stats')}
             >
               <BarChart3 className="h-4 w-4 mr-2" />
-              Stats
+              {t('stats')}
             </Button>
             <Button
               variant={viewMode === 'drag' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setViewMode('drag')}
             >
-              Drag & Drop
+              {t('dragAndDrop')}
             </Button>
             <Button
               variant={viewMode === 'list' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setViewMode('list')}
             >
-              List
+              {t('list')}
             </Button>
             <Button onClick={() => setIsModalOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
@@ -113,7 +113,7 @@ const Timeline = () => {
             <SearchBar
               value={searchQuery}
               onChange={setSearchQuery}
-              placeholder="Search tasks..."
+              placeholder={t('searchTasks')}
             />
           </div>
           <TaskFilters
@@ -128,8 +128,8 @@ const Timeline = () => {
             <CardTitle className="flex items-center justify-between">
               <span>
                 {filteredTasks.length === tasks.length 
-                  ? `All Tasks (${tasks.length})`
-                  : `Filtered Tasks (${filteredTasks.length} of ${tasks.length})`
+                  ? `${t('allTasks')} (${tasks.length})`
+                  : `${t('filteredTasks')} (${filteredTasks.length} of ${tasks.length})`
                 }
               </span>
               {isLoading && <LoadingSpinner size="sm" />}
@@ -140,9 +140,9 @@ const Timeline = () => {
               searchQuery || filters.status !== 'all' || filters.priority !== 'all' || filters.urgency !== 'all' ? (
                 <EmptyState
                   icon={Search}
-                  title="No tasks found"
-                  description="Try adjusting your search or filters to find tasks."
-                  actionLabel="Clear Filters"
+                  title={t('noTasksFound')}
+                  description={t('tryAdjustingSearch')}
+                  actionLabel={t('clearFilters')}
                   onAction={() => {
                     setSearchQuery('');
                     setFilters({ status: 'all', priority: 'all', urgency: 'all' });
@@ -152,7 +152,7 @@ const Timeline = () => {
                 <EmptyState
                   icon={Calendar}
                   title={t('noTasks')}
-                  description="Get started by creating your first task!"
+                  description={t('getStartedByCreating')}
                   actionLabel={t('addNewTask')}
                   onAction={() => setIsModalOpen(true)}
                 />

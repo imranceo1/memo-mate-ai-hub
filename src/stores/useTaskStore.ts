@@ -8,7 +8,7 @@ export interface Task {
   description: string;
   dueDate: string;
   dueTime: string;
-  priority: 'low' | 'medium' | 'high';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
   urgency: 'normal' | 'urgent';
   source: 'manual' | 'gmail' | 'whatsapp' | 'calendar' | 'sms';
   status: 'pending' | 'completed';

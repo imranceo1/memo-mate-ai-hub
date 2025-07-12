@@ -31,6 +31,14 @@ export const analyticsTranslations = {
     gettingStartedTips: 'Getting Started Tips',
     aiInsights: 'AI Insights',
     
+    // Tip messages
+    tipStartFirstTask: 'Start by creating your first task to begin tracking your productivity',
+    tipCompleteTasks: 'Try completing a few tasks to see your progress',
+    tipGreatJob: 'Great job! You\'re maintaining excellent productivity',
+    tipBreakDownTasks: 'Consider breaking down large tasks into smaller, manageable pieces',
+    tipSetReminders: 'Set up reminders to stay on top of important deadlines',
+    tipUseSharing: 'Use the sharing feature to collaborate with your team',
+    
     // Categories
     work: 'Work',
     personal: 'Personal',
@@ -74,6 +82,14 @@ export const analyticsTranslations = {
     // AI Insights
     gettingStartedTips: 'प्रारंभिक सुझाव',
     aiInsights: 'AI अंतर्दृष्टि',
+    
+    // Tip messages
+    tipStartFirstTask: 'अपनी उत्पादकता को ट्रैक करना शुरू करने के लिए अपना पहला कार्य बनाकर शुरू करें',
+    tipCompleteTasks: 'अपनी प्रगति देखने के लिए कुछ कार्य पूरा करने का प्रयास करें',
+    tipGreatJob: 'बहुत अच्छा काम! आप उत्कृष्ट उत्पादकता बनाए रख रहे हैं',
+    tipBreakDownTasks: 'बड़े कार्यों को छोटे, प्रबंधनीय टुकड़ों में तोड़ने पर विचार करें',
+    tipSetReminders: 'महत्वपूर्ण समय सीमाओं पर नज़र रखने के लिए अनुस्मारक सेट करें',
+    tipUseSharing: 'अपनी टीम के साथ सहयोग करने के लिए साझा करने की सुविधा का उपयोग करें',
     
     // Categories
     work: 'कार्य',
@@ -119,6 +135,14 @@ export const analyticsTranslations = {
     gettingStartedTips: 'தொடக்க குறிப்புகள்',
     aiInsights: 'AI நுண்ணறிவுகள்',
     
+    // Tip messages
+    tipStartFirstTask: 'உங்கள் உற்பத்தித்திறனைக் கண்காணிக்கத் தொடங்க உங்கள் முதல் பணியை உருவாக்குவதன் மூலம் தொடங்குங்கள்',
+    tipCompleteTasks: 'உங்கள் முன்னேற்றத்தைக் காண சில பணிகளை முடிக்க முயற்சிக்கவும்',
+    tipGreatJob: 'சிறந்த வேலை! நீங்கள் சிறந்த உற்பத்தித்திறனை பராமரிக்கிறீர்கள்',
+    tipBreakDownTasks: 'பெரிய பணிகளை சிறிய, நிர்வகிக்கக்கூடிய துண்டுகளாக உடைக்க கருதுங்கள்',
+    tipSetReminders: 'முக்கியமான காலக்கெடுக்களை முன்னிலைப்படுத்த நினைவூட்டல்களை அமைக்கவும்',
+    tipUseSharing: 'உங்கள் குழுவுடன் ஒத்துழைக்க பகிர்வு அம்சத்தைப் பயன்படுத்தவும்',
+    
     // Categories
     work: 'வேலை',
     personal: 'தனிப்பட்ட',
@@ -163,6 +187,14 @@ export const analyticsTranslations = {
     gettingStartedTips: 'ప్రారంభ చిట్కాలు',
     aiInsights: 'AI అంతర్దృష్టులు',
     
+    // Tip messages
+    tipStartFirstTask: 'మీ ఉత్పాదకతను ట్రాక్ చేయడం ప్రారంభించడానికి మీ మొదటి టాస్క్‌ని సృష్టించడం ద్వారా ప్రారంభించండి',
+    tipCompleteTasks: 'మీ పురోగతిని చూడటానికి కొన్ని టాస్క్‌లను పూర్తి చేయడానికి ప్రయత్నించండి',
+    tipGreatJob: 'అద్భుతమైన పని! మీరు అద్భుతమైన ఉత్పాదకతను నిర్వహిస్తున్నారు',
+    tipBreakDownTasks: 'పెద్ద టాస్క్‌లను చిన్న, నిర్వహించదగిన ముక్కలుగా విభజించడాన్ని పరిగణించండి',
+    tipSetReminders: 'ముఖ్యమైన డెడ్‌లైన్‌లపై ఉండడానికి రిమైండర్‌లను సెటప్ చేయండి',
+    tipUseSharing: 'మీ జట్టుతో సహకరించడానికి షేరింగ్ ఫీచర్‌ని ఉపయోగించండి',
+    
     // Categories
     work: 'పని',
     personal: 'వ్యక్తిగత',
@@ -206,6 +238,14 @@ export const analyticsTranslations = {
     // AI Insights
     gettingStartedTips: '시작 팁',
     aiInsights: 'AI 인사이트',
+    
+    // Tip messages
+    tipStartFirstTask: '생산성을 추적하기 시작하려면 첫 번째 작업을 만들어보세요',
+    tipCompleteTasks: '진행 상황을 확인하려면 몇 가지 작업을 완료해보세요',
+    tipGreatJob: '훌륭한 일입니다! 뛰어난 생산성을 유지하고 있습니다',
+    tipBreakDownTasks: '큰 작업을 작고 관리하기 쉬운 조각으로 나누는 것을 고려해보세요',
+    tipSetReminders: '중요한 마감일을 놓치지 않도록 알림을 설정하세요',
+    tipUseSharing: '팀과 협업하기 위해 공유 기능을 사용하세요',
     
     // Categories
     work: '업무',
